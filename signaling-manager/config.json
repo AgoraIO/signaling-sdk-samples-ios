@@ -1,0 +1,12 @@
+{
+    "uid": "identifierForVendor",
+    "channel": "test",
+    "appId": "",
+    "token": "",
+    "tokenUrl": "",
+    "encryptionMode": 7,
+    "salt": "",
+    "cipherKey": "",
+    "proxyUrl": "",
+    "proxyType": "none"
+}
