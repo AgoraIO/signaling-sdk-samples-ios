@@ -39,4 +39,29 @@ open class SignalingManager: NSObject, ObservableObject {
     }
 
     @Published var label: String?
+
+    @discardableResult
+    func login(byToken token: String? = nil) async throws -> RtmCommonResponse {
+        if token != nil { DocsAppConfig.shared.token = token }
+        do {
+            // First try logging in with the current temporary token
+            return try await self.agoraEngine.login(byToken: DocsAppConfig.shared.token)
+        } catch {
+            guard let err = error as? RtmBaseErrorInfo else { throw error }
+            switch err.errorCode {
+            case .invalidToken, .tokenExpired: // fetch a new token if there's a token URL
+                if let newToken = try? await self.fetchToken(
+                     from: DocsAppConfig.shared.tokenUrl,
+                     username: DocsAppConfig.shared.uid,
+                     channelName: DocsAppConfig.shared.channel
+                ) {
+                    // Set the new token, then try logging in once more with it
+                    DocsAppConfig.shared.token = newToken
+                    return try await self.agoraEngine.login(byToken: DocsAppConfig.shared.token)
+                }
+            default: break
+            }
+            throw err
+        }
+    }
 }

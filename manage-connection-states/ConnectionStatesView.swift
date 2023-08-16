@@ -13,16 +13,6 @@ public class ConnectionStatesManager: SignalingManager, RtmClientDelegate {
     @Published var loggedIn: Bool = false
 
     @discardableResult
-    func login() async throws -> RtmCommonResponse {
-        let token = try? await self.fetchToken(
-            from: DocsAppConfig.shared.tokenUrl,
-            username: DocsAppConfig.shared.uid,
-            channelName: DocsAppConfig.shared.channel
-        )
-        return try await self.agoraEngine.login(byToken: token)
-    }
-
-    @discardableResult
     func logout() async throws -> RtmCommonResponse {
         try await self.agoraEngine.logout()
     }
@@ -78,6 +68,7 @@ struct ConnectionStatesView: View {
     }
 
     init(userId: String) {
+        DocsAppConfig.shared.uid = userId
         self.signalingManager = ConnectionStatesManager(
             appId: DocsAppConfig.shared.appId, userId: userId
         )

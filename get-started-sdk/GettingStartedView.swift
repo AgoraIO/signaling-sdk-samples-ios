@@ -20,16 +20,27 @@ public class GetStartedSignalingManager: SignalingManager, RtmClientDelegate {
 
     func loginAndSub(to channel: String, with token: String?) async {
         do {
-            try await self.agoraEngine.login(byToken: token)
+            try await self.login(byToken: token)
             try await self.agoraEngine.subscribe(
                 toChannel: channel, features: .messages
             )
+            label = "success"
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                self.label = nil
+            }
         } catch let err as RtmBaseErrorInfo {
             switch err.errorCode {
             case .loginNoServerResources, .loginTimeout, .loginRejected, .loginAborted:
                 label = "could not log in, check your app ID and token"
             case .channelSubscribeFailed, .channelSubscribeTimeout, .channelNotSubscribed:
                 label = "could not subscribe to channel"
+            case .invalidToken:
+                if label == nil, let token = try? await self.fetchToken(
+                    from: DocsAppConfig.shared.tokenUrl, username: DocsAppConfig.shared.uid
+                ) {
+                    label = "fetching token"
+                    await self.loginAndSub(to: channel, with: token)
+                }
             default:
                 label = "failed: \(err.operation)\nreason: \(err.reason)"
             }
@@ -86,6 +97,9 @@ struct GettingStartedView: View {
     }
 
     init(channelId: String, userId: String) {
+        DocsAppConfig.shared.channel = channelId
+        DocsAppConfig.shared.uid = userId
+
         self.channelId = channelId
         self.userId = userId
         self.signalingManager = GetStartedSignalingManager(
@@ -99,6 +113,9 @@ struct GettingStartedView: View {
 
 struct GettingStartedView_Previews: PreviewProvider {
     static var previews: some View {
-        GettingStartedView(channelId: "test", userId: "Bob")
+        GettingStartedView(
+            channelId: DocsAppConfig.shared.channel,
+            userId: DocsAppConfig.shared.uid
+        )
     }
 }

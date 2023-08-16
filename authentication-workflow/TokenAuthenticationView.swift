@@ -86,6 +86,9 @@ struct TokenAuthenticationView: View {
     }
 
     init(channelId: String, userId: String, tokenUrl: String) {
+        DocsAppConfig.shared.channel = channelId
+        DocsAppConfig.shared.uid = userId
+        DocsAppConfig.shared.tokenUrl = tokenUrl
         self.channelId = channelId
         self.userId = userId
         self.tokenUrl = tokenUrl
