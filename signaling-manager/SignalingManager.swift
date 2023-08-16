@@ -47,7 +47,7 @@ open class SignalingManager: NSObject, ObservableObject {
             // First try logging in with the current temporary token
             return try await self.agoraEngine.login(byToken: DocsAppConfig.shared.token)
         } catch {
-            guard let err = error as? RtmBaseErrorInfo else { throw error }
+            guard let err = error as? RtmErrorInfo else { throw error }
             switch err.errorCode {
             case .invalidToken, .tokenExpired: // fetch a new token if there's a token URL
                 if let newToken = try? await self.fetchToken(
@@ -63,5 +63,10 @@ open class SignalingManager: NSObject, ObservableObject {
             }
             throw err
         }
+    }
+
+    @discardableResult func destroy() async -> RtmErrorCode? {
+        _ = try? await self.agoraEngine.logout()
+        return self.agoraEngine.destroy()
     }
 }

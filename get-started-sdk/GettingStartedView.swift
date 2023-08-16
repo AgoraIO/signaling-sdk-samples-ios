@@ -24,11 +24,9 @@ public class GetStartedSignalingManager: SignalingManager, RtmClientDelegate {
             try await self.agoraEngine.subscribe(
                 toChannel: channel, features: .messages
             )
-            label = "success"
-            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                self.label = nil
-            }
-        } catch let err as RtmBaseErrorInfo {
+            DispatchQueue.main.async { self.label = "success" }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3) { self.label = nil }
+        } catch let err as RtmErrorInfo {
             switch err.errorCode {
             case .loginNoServerResources, .loginTimeout, .loginRejected, .loginAborted:
                 label = "could not log in, check your app ID and token"
@@ -42,7 +40,9 @@ public class GetStartedSignalingManager: SignalingManager, RtmClientDelegate {
                     await self.loginAndSub(to: channel, with: token)
                 }
             default:
-                label = "failed: \(err.operation)\nreason: \(err.reason)"
+                DispatchQueue.main.async {
+                    self.label = "failed: \(err.operation)\nreason: \(err.reason)"
+                }
             }
         } catch { print("other error occurred: \(error.localizedDescription)") }
     }
@@ -53,9 +53,11 @@ public class GetStartedSignalingManager: SignalingManager, RtmClientDelegate {
             to: channel
         )) != nil else { return print("Could not publish message") }
 
-        self.messages.append(
-            SignalingMessage(text: message, sender: "", id: .init())
-        )
+        DispatchQueue.main.async {
+            self.messages.append(
+                SignalingMessage(text: message, sender: DocsAppConfig.shared.uid, id: .init())
+            )
+        }
     }
 
     public func rtmClient(
@@ -64,7 +66,9 @@ public class GetStartedSignalingManager: SignalingManager, RtmClientDelegate {
         guard let str = event.message.getString() else {
             return print("invalid message")
         }
-        self.messages.append(SignalingMessage(text: str, sender: event.publisher, id: .init()))
+        DispatchQueue.main.async {
+            self.messages.append(SignalingMessage(text: str, sender: event.publisher, id: .init()))
+        }
     }
 }
 
@@ -86,7 +90,7 @@ struct GettingStartedView: View {
         }.onAppear {
             await signalingManager.loginAndSub(to: self.channelId, with: DocsAppConfig.shared.token)
         }.onDisappear {
-            _ = try? await signalingManager.engine?.logout()
+            await signalingManager.destroy()
         }
     }
 

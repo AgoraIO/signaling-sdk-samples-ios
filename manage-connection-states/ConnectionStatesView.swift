@@ -64,6 +64,8 @@ struct ConnectionStatesView: View {
                     Text("Log \(signalingManager.loggedIn ? "out" : "in")")
                 }.disabled(logInButtonDisabled)
             }
+        }.onDisappear {
+            await signalingManager.destroy()
         }
     }
 

@@ -18,6 +18,9 @@ struct ContentView: View {
                     NavigationLink(TokenAuthenticationView.docTitle) {
                         TokenUrlInputView(continueTo: TokenAuthenticationView.self)
                     }
+                    NavigationLink(ConnectionStatesView.docTitle) {
+                        UserInputView(continueTo: ConnectionStatesView.self)
+                    }
                 }
             }.navigationTitle("Signaling SDK reference app").navigationBarTitleDisplayMode(.inline)
         }

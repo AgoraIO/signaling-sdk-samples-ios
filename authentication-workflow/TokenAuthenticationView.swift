@@ -75,7 +75,7 @@ struct TokenAuthenticationView: View {
                    return
             }
         }.onDisappear {
-            _ = try? await signalingManager.engine?.logout()
+            await signalingManager.destroy()
         }
     }
 
