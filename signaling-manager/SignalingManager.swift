@@ -29,7 +29,7 @@ open class SignalingManager: NSObject, ObservableObject {
     open func setupEngine() -> RtmClientKit {
         let config = RtmClientConfig(appId: self.appId, userId: self.userId)
         config.logConfig?.level = .error
-        guard let eng = RtmClientKit(
+        guard let eng = try? RtmClientKit(
             config: config, delegate: self as? RtmClientDelegate
         ) else {
             fatalError("could not create client engine: check parameters")
@@ -38,6 +38,7 @@ open class SignalingManager: NSObject, ObservableObject {
         return eng
     }
 
+    /// For displaying error messages etc.
     @Published var label: String?
 
     @discardableResult
@@ -50,6 +51,7 @@ open class SignalingManager: NSObject, ObservableObject {
             guard let err = error as? RtmErrorInfo else { throw error }
             switch err.errorCode {
             case .invalidToken, .tokenExpired: // fetch a new token if there's a token URL
+//                try? await self.agoraEngine.logout()
                 if let newToken = try? await self.fetchToken(
                      from: DocsAppConfig.shared.tokenUrl,
                      username: DocsAppConfig.shared.uid,
@@ -57,7 +59,7 @@ open class SignalingManager: NSObject, ObservableObject {
                 ) {
                     // Set the new token, then try logging in once more with it
                     DocsAppConfig.shared.token = newToken
-                    return try await self.agoraEngine.login(byToken: DocsAppConfig.shared.token)
+                    return try await self.agoraEngine.login(byToken: newToken)
                 }
             default: break
             }
@@ -65,8 +67,8 @@ open class SignalingManager: NSObject, ObservableObject {
         }
     }
 
-    @discardableResult func destroy() async -> RtmErrorCode? {
-        _ = try? await self.agoraEngine.logout()
-        return self.agoraEngine.destroy()
+    func destroy() async throws {
+        try await self.agoraEngine.logout()
+        try self.agoraEngine.destroy()
     }
 }

@@ -25,10 +25,12 @@ extension SignalingManager {
             "tokenType": "rtm",
             "uid": username
         ]
+
         // This is used only for stream channels
         if let channelName {
             userData["channel"] = channelName
         }
+
         let requestData = try JSONEncoder().encode(userData)
         request.httpBody = requestData
 
@@ -47,6 +49,8 @@ extension GetStartedSignalingManager {
     }
 }
 
+// MARK: - UI
+
 struct TokenAuthenticationView: View {
     @ObservedObject var signalingManager: GetStartedSignalingManager
     let channelId: String
@@ -61,21 +65,23 @@ struct TokenAuthenticationView: View {
                 ).padding()
                 MessageInputView(publish: publish(message:))
             }
-            if let label = self.signalingManager.label {
-                Text(label).padding()
-                    .background(Color.secondary).cornerRadius(5).multilineTextAlignment(.center)
-            }
+            ToastView(message: $signalingManager.label)
         }.onAppear {
-            do {
-                try await signalingManager.loginAndSub(
-                    to: self.channelId, withTokenUrl: self.tokenUrl
-                )
-            } catch {
-                signalingManager.label = "Could not fetch token\n\(error.localizedDescription)"
-                   return
-            }
+            await self.viewAppeared()
         }.onDisappear {
-            await signalingManager.destroy()
+            try? await signalingManager.destroy()
+        }
+    }
+
+    // MARK: - Helpers and Setup
+
+    func viewAppeared() async {
+        do {
+            try await signalingManager.loginAndSub(
+                to: self.channelId, withTokenUrl: self.tokenUrl
+            )
+        } catch {
+            signalingManager.label = "Could not fetch token\n\(error.localizedDescription)"
         }
     }
 

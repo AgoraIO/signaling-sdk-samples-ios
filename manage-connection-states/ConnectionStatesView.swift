@@ -26,7 +26,7 @@ public class ConnectionStatesManager: SignalingManager, RtmClientDelegate {
         connectionStateChanged state: RtmClientConnectionState,
         changeReason reason: RtmClientConnectionChangeReason
     ) {
-        label = """
+        self.label = """
         Connection
         state: \(state.description)
         reason: \(reason.description)
@@ -34,17 +34,16 @@ public class ConnectionStatesManager: SignalingManager, RtmClientDelegate {
     }
 }
 
+// MARK: - UI
+
 struct ConnectionStatesView: View {
     @ObservedObject var signalingManager: ConnectionStatesManager
 
     @State var logInButtonDisabled = false
     var body: some View {
-        VStack {
-            Spacer()
-            Text(signalingManager.label ?? "Press \"Log in\" below")
-                .multilineTextAlignment(.center)
-            Spacer()
-            HStack {
+        ZStack {
+            VStack {
+                Spacer()
                 Button {
                     logInButtonDisabled = true
                     Task {
@@ -56,16 +55,17 @@ struct ConnectionStatesView: View {
                                 try await self.signalingManager.login()
                             }
                             signalingManager.loggedIn.toggle()
-                        } catch {
-                            print(error.localizedDescription)
+                        } catch let error as RtmErrorInfo {
+                            signalingManager.label = "Couldn't log in: \(error.errorCode)\n\(error.reason)"
                         }
                     }
                 } label: {
-                    Text("Log \(signalingManager.loggedIn ? "out" : "in")")
-                }.disabled(logInButtonDisabled)
+                    Text("Log \(signalingManager.loggedIn ? "out" : "in")").padding(5)
+                }.buttonStyle(.borderedProminent).disabled(logInButtonDisabled).cornerRadius(8).padding()
             }
+            ToastView(message: $signalingManager.label)
         }.onDisappear {
-            await signalingManager.destroy()
+            try? await signalingManager.destroy()
         }
     }
 

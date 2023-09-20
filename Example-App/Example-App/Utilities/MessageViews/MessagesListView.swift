@@ -11,16 +11,14 @@ struct MessagesListView: View {
     @Binding var messages: [SignalingMessage]
     var localUser: String?
     var body: some View {
-        ScrollView {
-            LazyVStack(spacing: 12) {
-                ForEach(messages) { message in
-                    MessageCellView(
-                        message: message,
-                        isLocalUser: (localUser ?? "") == message.sender
-                    )
-                }
+        ScrollView { LazyVStack(spacing: 12) {
+            ForEach(messages) { message in
+                MessageCellView(
+                    message: message,
+                    isLocalUser: (localUser ?? "") == message.sender
+                )
             }
-        }
+        }}
     }
 }
 
@@ -33,7 +31,7 @@ struct MessagesListView_Previews: PreviewProvider {
                 SignalingMessage(text: "Hey there! 🌟", sender: "Alice", id: .init()),
                 SignalingMessage(text: "Hey Alice! How's it going?", sender: "Bob", id: .init()),
                 SignalingMessage(
-                    text: "I'm doing great. Just started learning SwiftUI. It's really cool!",
+                    text: "I'm doing great. Just started learning RTM 2.0. It's really cool!",
                     sender: "Alice", id: .init()
                 ),
                 SignalingMessage(

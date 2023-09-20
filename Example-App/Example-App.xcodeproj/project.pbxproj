@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		F32AF8AF2A8BB86200A27ED1 /* Example_AppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F32AF8AE2A8BB86200A27ED1 /* Example_AppApp.swift */; };
+		F32AF8AF2A8BB86200A27ED1 /* ExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F32AF8AE2A8BB86200A27ED1 /* ExampleApp.swift */; };
 		F32AF8B12A8BB86200A27ED1 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F32AF8B02A8BB86200A27ED1 /* ContentView.swift */; };
 		F32AF8B32A8BB86500A27ED1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F32AF8B22A8BB86500A27ED1 /* Assets.xcassets */; };
 		F32AF8B62A8BB86500A27ED1 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F32AF8B52A8BB86500A27ED1 /* Preview Assets.xcassets */; };
@@ -22,6 +22,7 @@
 		F32AF8D62A8BC19400A27ED1 /* TokenAuthenticationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F32AF8D52A8BC19400A27ED1 /* TokenAuthenticationView.swift */; };
 		F32AF8D92A8BC1F500A27ED1 /* config.json in Resources */ = {isa = PBXBuildFile; fileRef = F32AF8D72A8BC1F500A27ED1 /* config.json */; };
 		F32AF8DA2A8BC1F500A27ED1 /* DocsAppConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = F32AF8D82A8BC1F500A27ED1 /* DocsAppConfig.swift */; };
+		F346C2812A950F6E0086C956 /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F346C2802A950F6E0086C956 /* ToastView.swift */; };
 		F3FAB37C2A8CAB600009033F /* TokenUrlInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3FAB37B2A8CAB600009033F /* TokenUrlInputView.swift */; };
 		F3FAB37F2A8CE71E0009033F /* ConnectionStatesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3FAB37E2A8CE71E0009033F /* ConnectionStatesView.swift */; };
 		F3FAB3812A8CEE970009033F /* UserInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3FAB3802A8CEE970009033F /* UserInputView.swift */; };
@@ -29,7 +30,7 @@
 
 /* Begin PBXFileReference section */
 		F32AF8AB2A8BB86200A27ED1 /* Example-App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Example-App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		F32AF8AE2A8BB86200A27ED1 /* Example_AppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Example_AppApp.swift; sourceTree = "<group>"; };
+		F32AF8AE2A8BB86200A27ED1 /* ExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleApp.swift; sourceTree = "<group>"; };
 		F32AF8B02A8BB86200A27ED1 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		F32AF8B22A8BB86500A27ED1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F32AF8B52A8BB86500A27ED1 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
@@ -43,6 +44,7 @@
 		F32AF8D52A8BC19400A27ED1 /* TokenAuthenticationView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TokenAuthenticationView.swift; path = "../../../../authentication-workflow/TokenAuthenticationView.swift"; sourceTree = "<group>"; };
 		F32AF8D72A8BC1F500A27ED1 /* config.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = config.json; path = "../../../../signaling-manager/config.json"; sourceTree = "<group>"; };
 		F32AF8D82A8BC1F500A27ED1 /* DocsAppConfig.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DocsAppConfig.swift; path = "../../../../signaling-manager/DocsAppConfig.swift"; sourceTree = "<group>"; };
+		F346C2802A950F6E0086C956 /* ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastView.swift; sourceTree = "<group>"; };
 		F3FAB37B2A8CAB600009033F /* TokenUrlInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenUrlInputView.swift; sourceTree = "<group>"; };
 		F3FAB37E2A8CE71E0009033F /* ConnectionStatesView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ConnectionStatesView.swift; path = "../../../../manage-connection-states/ConnectionStatesView.swift"; sourceTree = "<group>"; };
 		F3FAB3802A8CEE970009033F /* UserInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserInputView.swift; sourceTree = "<group>"; };
@@ -79,7 +81,7 @@
 		F32AF8AD2A8BB86200A27ED1 /* Example-App */ = {
 			isa = PBXGroup;
 			children = (
-				F32AF8AE2A8BB86200A27ED1 /* Example_AppApp.swift */,
+				F32AF8AE2A8BB86200A27ED1 /* ExampleApp.swift */,
 				F32AF8B02A8BB86200A27ED1 /* ContentView.swift */,
 				F32AF8CD2A8BB9D800A27ED1 /* app-stories */,
 				F32AF8BC2A8BB8A400A27ED1 /* Utilities */,
@@ -132,6 +134,7 @@
 			isa = PBXGroup;
 			children = (
 				F32AF8C82A8BB99D00A27ED1 /* View+Extensions.swift */,
+				F346C2802A950F6E0086C956 /* ToastView.swift */,
 			);
 			path = "Misc+Extensions";
 			sourceTree = "<group>";
@@ -261,6 +264,7 @@
 				F32AF8C42A8BB97B00A27ED1 /* MessageCellView.swift in Sources */,
 				F32AF8DA2A8BC1F500A27ED1 /* DocsAppConfig.swift in Sources */,
 				F32AF8D32A8BBAB800A27ED1 /* ChannelInputView.swift in Sources */,
+				F346C2812A950F6E0086C956 /* ToastView.swift in Sources */,
 				F32AF8C52A8BB97B00A27ED1 /* MessageInputView.swift in Sources */,
 				F3FAB37C2A8CAB600009033F /* TokenUrlInputView.swift in Sources */,
 				F32AF8B12A8BB86200A27ED1 /* ContentView.swift in Sources */,
@@ -269,7 +273,7 @@
 				F32AF8BF2A8BB94B00A27ED1 /* SignalingManager.swift in Sources */,
 				F3FAB3812A8CEE970009033F /* UserInputView.swift in Sources */,
 				F32AF8C62A8BB97B00A27ED1 /* MessagesListView.swift in Sources */,
-				F32AF8AF2A8BB86200A27ED1 /* Example_AppApp.swift in Sources */,
+				F32AF8AF2A8BB86200A27ED1 /* ExampleApp.swift in Sources */,
 				F32AF8D02A8BBA1000A27ED1 /* GettingStartedView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -477,8 +481,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/AgoraIO-Community/AgoraRtm.git";
 			requirement = {
-				branch = main;
-				kind = branch;
+				kind = exactVersion;
+				version = "2.1.5-build.277405.2";
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
