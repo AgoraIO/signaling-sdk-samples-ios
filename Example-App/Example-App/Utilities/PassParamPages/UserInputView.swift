@@ -36,7 +36,7 @@ struct UserInputView<Content: HasUserInput>: View {
             NavigationLink(destination: NavigationLazyView(continueTo.init(
                 userId: userId.trimmingCharacters(in: .whitespaces)
             ).navigationTitle(continueTo.docTitle).toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
+                ToolbarItem(placement: .automatic) {
 //                    GitHubButtonView(continueTo.docPath)
                 }
             }), label: {
@@ -44,9 +44,9 @@ struct UserInputView<Content: HasUserInput>: View {
             }).disabled(userId.isEmpty)
                 .buttonStyle(.borderedProminent)
                 .navigationTitle("Channel Input")
-        }.onChange(of: userId) {
+        }.onChange(of: userId) { newVal in
             if let filtered = self.filter(
-                string: $0, by: RtmLegalCharacterSets.username
+                string: newVal, by: RtmLegalCharacterSets.username
             ) { userId = filtered }
         }.onAppear {
             userId = DocsAppConfig.shared.uid

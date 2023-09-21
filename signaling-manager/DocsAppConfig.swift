@@ -20,12 +20,29 @@ public struct DocsAppConfig: Codable {
         if (obj.token ?? "").isEmpty {
             obj.token = nil
         }
+        #if os(iOS)
         if obj.uid == "identifierForVendor",
            let vendorId = UIDevice.current.identifierForVendor?.uuidString {
             obj.uid = vendorId
         }
+        #endif
+        // if macos, or the identifier otherwise failed
+        if obj.uid == "identifierForVendor" {
+            obj.uid = DocsAppConfig.appUniqueIdentifier()
+        }
         return obj
     }()
+
+    static func appUniqueIdentifier() -> String {
+        let userDefaults = UserDefaults.standard
+        if let uuid = userDefaults.string(forKey: "appUniqueIdentifier") {
+            return uuid
+        } else {
+            let newUUID = UUID().uuidString
+            userDefaults.set(newUUID, forKey: "appUniqueIdentifier")
+            return newUUID
+        }
+    }
 
     var uid: String
     // APP ID from https://console.agora.io

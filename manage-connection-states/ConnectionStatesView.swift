@@ -20,11 +20,10 @@ public class ConnectionStatesManager: SignalingManager, RtmClientDelegate {
     func subscribe(_ channel: String) async throws -> RtmCommonResponse {
         try await self.agoraEngine.subscribe(toChannel: channel)
     }
-
-    public func rtmClient(
+    public func rtmKit(
         _ rtmClient: RtmClientKit, channel: String,
-        connectionStateChanged state: RtmClientConnectionState,
-        changeReason reason: RtmClientConnectionChangeReason
+        connectionChangedToState state: RtmClientConnectionState,
+        reason: RtmClientConnectionChangeReason
     ) {
         self.label = """
         Connection

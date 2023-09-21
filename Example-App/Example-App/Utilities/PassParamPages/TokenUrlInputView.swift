@@ -25,18 +25,25 @@ struct TokenUrlInputView<Content: HasTokenUrlInput>: View {
     /// The type of view to navigate to.
     var continueTo: Content.Type
 
+    #if os(macOS)
+    // URL only available on macOS 14+.
+    let textType: NSTextContentType? = .none
+    #else
+    let textType: UITextContentType = .URL
+    #endif
+
     var body: some View {
         VStack {
             VStack(alignment: .leading) {
                 Text("Username")
                 TextField("Enter username", text: $userId)
-                    .textContentType(.username).textFieldStyle(.roundedBorder)
+                    .textContentType(.username).textFieldStyle(.roundedBorder).autocorrectionDisabled()
                 Text("Channel ID")
             TextField("Enter channel id", text: $channelId)
-                .textContentType(.username).textFieldStyle(.roundedBorder)
+                    .textContentType(.username).textFieldStyle(.roundedBorder).autocorrectionDisabled()
                 Text("Token URL")
             TextField("Enter token URL", text: $tokenUrl)
-                .textContentType(.URL).textFieldStyle(.roundedBorder)
+                    .textContentType(self.textType).textFieldStyle(.roundedBorder).autocorrectionDisabled()
             }.padding([.leading, .trailing])
 
             NavigationLink(destination: NavigationLazyView(continueTo.init(
@@ -44,7 +51,7 @@ struct TokenUrlInputView<Content: HasTokenUrlInput>: View {
                 userId: userId.trimmingCharacters(in: .whitespaces),
                 tokenUrl: tokenUrl.trimmingCharacters(in: .whitespaces)
             ).navigationTitle(continueTo.docTitle).toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
+                ToolbarItem(placement: .automatic) {
 //                    GitHubButtonView(continueTo.docPath)
                 }
             }), label: {
@@ -52,13 +59,13 @@ struct TokenUrlInputView<Content: HasTokenUrlInput>: View {
             }).disabled(channelId.isEmpty || userId.isEmpty)
                 .buttonStyle(.borderedProminent)
                 .navigationTitle("Channel Input")
-        }.onChange(of: channelId) {
+        }.onChange(of: channelId) { newVal in
             if let filtered = self.filter(
-                string: $0, by: RtmLegalCharacterSets.channelName
+                string: newVal, by: RtmLegalCharacterSets.channelName
             ) { channelId = filtered }
-        }.onChange(of: userId) {
+        }.onChange(of: userId) { newVal in
             if let filtered = self.filter(
-                string: $0, by: RtmLegalCharacterSets.username
+                string: newVal, by: RtmLegalCharacterSets.username
             ) { userId = filtered }
         }.onAppear {
             channelId = DocsAppConfig.shared.channel

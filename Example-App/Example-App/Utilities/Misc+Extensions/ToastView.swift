@@ -25,7 +25,9 @@ struct ToastView: View {
                     .opacity(isShowingMessage ? 1 : 0)
                     .multilineTextAlignment(.center)
             }
-        }.onChange(of: self.message) { _ in self.setupCancellable() }
+        }.onChange(of: self.message) { _ in
+            self.setupCancellable()
+        }
     }
 
     private func setupCancellable() {

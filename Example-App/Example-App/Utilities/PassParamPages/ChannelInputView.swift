@@ -63,7 +63,7 @@ struct ChannelInputView<Content: HasChannelInput>: View {
                 channelId: channelId.trimmingCharacters(in: .whitespaces),
                 userId: userId.trimmingCharacters(in: .whitespaces)
             ).navigationTitle(continueTo.docTitle).toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
+                ToolbarItem(placement: .automatic) {
 //                    GitHubButtonView(continueTo.docPath)
                 }
             }), label: {
@@ -71,13 +71,13 @@ struct ChannelInputView<Content: HasChannelInput>: View {
             }).disabled(channelId.isEmpty || userId.isEmpty)
                 .buttonStyle(.borderedProminent)
                 .navigationTitle("Channel Input")
-        }.onChange(of: channelId) {
+        }.onChange(of: channelId) { newVal in
             if let filtered = self.filter(
-                string: $0, by: RtmLegalCharacterSets.channelName
+                string: newVal, by: RtmLegalCharacterSets.channelName
             ) { channelId = filtered }
-        }.onChange(of: userId) {
+        }.onChange(of: userId) { newVal in
             if let filtered = self.filter(
-                string: $0, by: RtmLegalCharacterSets.username
+                string: newVal, by: RtmLegalCharacterSets.username
             ) { userId = filtered }
         }.onAppear {
             channelId = DocsAppConfig.shared.channel

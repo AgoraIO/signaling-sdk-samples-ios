@@ -6,24 +6,40 @@
 //
 
 import SwiftUI
+import AgoraRtm
 
 struct ContentView: View {
     var body: some View {
+        #if os(iOS)
         NavigationStack {
-            List {
-                Section("Get Started") {
-                    NavigationLink(GettingStartedView.docTitle) {
-                        ChannelInputView(continueTo: GettingStartedView.self)
-                    }
-                    NavigationLink(TokenAuthenticationView.docTitle) {
-                        TokenUrlInputView(continueTo: TokenAuthenticationView.self)
-                    }
-                    NavigationLink(ConnectionStatesView.docTitle) {
-                        UserInputView(continueTo: ConnectionStatesView.self)
-                    }
-                }
-            }.navigationTitle("Signaling SDK reference app").navigationBarTitleDisplayMode(.inline)
+            content.navigationBarTitleDisplayMode(.inline)
         }
+        #elseif os(macOS)
+        if #available(macOS 14.0, *) {
+            NavigationStack {
+                content.toolbarTitleDisplayMode(.inline)
+            }
+        } else {
+            NavigationStack { content }
+        }
+        #endif
+        Text(RtmClientKit.getVersion()).opacity(0.6)
+    }
+    @ViewBuilder
+    var content: some View {
+        List {
+            Section("Get Started") {
+                NavigationLink(GettingStartedView.docTitle) {
+                    ChannelInputView(continueTo: GettingStartedView.self)
+                }
+                NavigationLink(TokenAuthenticationView.docTitle) {
+                    TokenUrlInputView(continueTo: TokenAuthenticationView.self)
+                }
+                NavigationLink(ConnectionStatesView.docTitle) {
+                    UserInputView(continueTo: ConnectionStatesView.self)
+                }
+            }
+        }.navigationTitle("Signaling SDK reference app")
     }
 }
 
