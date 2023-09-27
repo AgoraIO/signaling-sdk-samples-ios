@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-struct MessagesListView: View {
-    @Binding var messages: [SignalingMessage]
+struct MessagesListView<T: DisplayMessage>: View {
+    @Binding var messages: [T]
     var localUser: String?
     var body: some View {
         ScrollView { LazyVStack(spacing: 12) {

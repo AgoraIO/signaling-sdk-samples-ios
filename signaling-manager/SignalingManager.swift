@@ -22,7 +22,7 @@ open class SignalingManager: NSObject, ObservableObject {
 
     public var engine: RtmClientKit?
     /// The Agora Signaling Engine for the session.
-    public var agoraEngine: RtmClientKit {
+    public var signalingEngine: RtmClientKit {
         if let engine { return engine }
         return setupEngine()
     }
@@ -41,12 +41,17 @@ open class SignalingManager: NSObject, ObservableObject {
     /// For displaying error messages etc.
     @Published var label: String?
 
+    @MainActor
+    func updateLabel(to message: String) {
+        self.label = message
+    }
+
     @discardableResult
     func login(byToken token: String? = nil) async throws -> RtmCommonResponse {
         if token != nil { DocsAppConfig.shared.token = token }
         do {
             // First try logging in with the current temporary token
-            return try await self.agoraEngine.login(byToken: DocsAppConfig.shared.token)
+            return try await self.signalingEngine.login(byToken: DocsAppConfig.shared.token)
         } catch {
             guard let err = error as? RtmErrorInfo else { throw error }
             switch err.errorCode {
@@ -54,12 +59,11 @@ open class SignalingManager: NSObject, ObservableObject {
 //                try? await self.agoraEngine.logout()
                 if let newToken = try? await self.fetchToken(
                      from: DocsAppConfig.shared.tokenUrl,
-                     username: DocsAppConfig.shared.uid,
-                     channelName: DocsAppConfig.shared.channel
+                     username: DocsAppConfig.shared.uid
                 ) {
                     // Set the new token, then try logging in once more with it
                     DocsAppConfig.shared.token = newToken
-                    return try await self.agoraEngine.login(byToken: newToken)
+                    return try await self.signalingEngine.login(byToken: newToken)
                 }
             default: break
             }
@@ -68,7 +72,7 @@ open class SignalingManager: NSObject, ObservableObject {
     }
 
     func destroy() async throws {
-        try await self.agoraEngine.logout()
-        try self.agoraEngine.destroy()
+        try await self.signalingEngine.logout()
+        try self.signalingEngine.destroy()
     }
 }

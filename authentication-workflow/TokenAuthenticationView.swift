@@ -56,6 +56,7 @@ struct TokenAuthenticationView: View {
     let channelId: String
     let userId: String
     let tokenUrl: String
+    @State var presenceViewPresented: Bool = false
 
     var body: some View {
         ZStack {
@@ -63,6 +64,13 @@ struct TokenAuthenticationView: View {
                 MessagesListView(
                     messages: $signalingManager.messages, localUser: self.userId
                 ).padding()
+                PresenceButtonView(
+                    presenceViewPresented: $presenceViewPresented,
+                    remoteCount: Binding(
+                        get: { self.signalingManager.remoteUsers.count },
+                        set: { _ in }
+                    )
+                )
                 MessageInputView(publish: publish(message:))
             }
             ToastView(message: $signalingManager.label)
@@ -70,6 +78,8 @@ struct TokenAuthenticationView: View {
             await self.viewAppeared()
         }.onDisappear {
             try? await signalingManager.destroy()
+        }.sheet(isPresented: self.$presenceViewPresented) {
+            RemoteUsersView(remoteUsers: $signalingManager.remoteUsers)
         }
     }
 
@@ -81,7 +91,7 @@ struct TokenAuthenticationView: View {
                 to: self.channelId, withTokenUrl: self.tokenUrl
             )
         } catch {
-            signalingManager.label = "Could not fetch token\n\(error.localizedDescription)"
+            signalingManager.updateLabel(to: "Could not fetch token\n\(error.localizedDescription)")
         }
     }
 

@@ -8,35 +8,10 @@
 import SwiftUI
 import AgoraRtm
 
-public protocol DisplayMessage: Identifiable {
-    var text: String { get }
-    var sender: String { get }
-    var id: UUID { get }
-}
-
-#if canImport(AppKit)
-import AppKit
-extension NSColor {
-    static var systemBackground: NSColor { NSColor.windowBackgroundColor }
-}
-#endif
-
-/// Custom identifiable struct to store incoming and outgoing messages.
-public struct SignalingMessage: DisplayMessage {
-    /// Content of the message
-    public var text: String
-    /// Username of the sender
-    public var sender: String
-    /// A random, unique ID for the message. These IDs are not synchonised.
-    public var id: UUID
-}
-
-public class GetStartedSignalingManager: SignalingManager, RtmClientDelegate {
+public class StorageSignalingManager: SignalingManager, RtmClientDelegate {
 
     /// A collection of all sent and received messages, stored in a custom struct.
     @Published var messages: [SignalingMessage] = []
-
-    @Published var remoteUsers: Set<String> = []
 
     /// Log into Signaling with a token, and subscribe to a message channel.
     /// - Parameters:
@@ -46,37 +21,42 @@ public class GetStartedSignalingManager: SignalingManager, RtmClientDelegate {
         do {
             try await self.login(byToken: token)
             try await self.signalingEngine.subscribe(
-                toChannel: channel, features: [.messages, .presence]
+                toChannel: channel, features: .messages
             )
             await self.updateLabel(to: "success")
         } catch let err as RtmErrorInfo {
             await self.handleLoginSubError(error: err, channel: channel)
         } catch {
-            await self.updateLabel(to: "other error occurred: \(error.localizedDescription)")
+            print("other error occurred: \(error.localizedDescription)")
         }
     }
 
-    /// Publish a message to a message channel.
-    /// - Parameters:
-    ///   - message: String to be sent to the channel. UTF-8 suppported 👋.
-    ///   - channel: Channel name to publish the message to.
-    public func publish(message: String, to channel: String) async {
-        do {
-            try await self.signalingEngine.publish(
-                message: message,
-                to: channel
-            )
-        } catch let err as RtmErrorInfo {
-            return await self.updateLabel(to: "Could not publish message: \(err.reason)")
-        } catch {
-            await self.updateLabel(to: "Unknown error: \(error.localizedDescription)")
+    @Published var localMetadata: [String: String] = [:]
+
+    public func setUserInfo(to localData: [String: String]) async throws {
+        self.localMetadata = localData
+
+        guard let userMd = try await self.signalingEngine.storage?.getUserMetadata(
+            userId: self.userId
+        )?.data else { return }
+
+        userMd.setMetadataItems(localData)
+        _ = try await self.signalingEngine.storage?.setUserMetadata(
+            userId: self.userId, data: userMd
+        )
+    }
+
+    public func removeUserInfo(for keys: [String]) async throws {
+        guard let removeMetadata = signalingEngine.storage?
+            .createMetadata() else { return }
+
+        keys.forEach { key in
+            removeMetadata.setMetadataItem(.init(key: key, value: ""))
         }
 
-        DispatchQueue.main.async {
-            self.messages.append(
-                SignalingMessage(text: message, sender: DocsAppConfig.shared.uid, id: .init())
-            )
-        }
+        _ = try await signalingEngine.storage?.removeUserMetadata(
+            userId: self.userId, data: removeMetadata
+        )
     }
 
     public func rtmKit(
@@ -91,24 +71,6 @@ public class GetStartedSignalingManager: SignalingManager, RtmClientDelegate {
             }
         case .data(let data):
             print("other data object in message: \(data)")
-        }
-    }
-
-    public func rtmKit(_ rtmClient: RtmClientKit, didReceivePresenceEvent event: RtmPresenceEvent) {
-        DispatchQueue.main.async {
-            switch event.type {
-            case .remoteJoinChannel(let publisher):
-                print("remote user joined channel: \(publisher)")
-                self.remoteUsers.insert(publisher)
-            case .remoteLeaveChannel(let publisher):
-                print("remote user left channel: \(publisher)")
-                self.remoteUsers.remove(publisher)
-            case .snapshot(let snapshot):
-                self.remoteUsers = Set(snapshot.keys).filter {
-                    $0 != self.userId
-                }
-            default: break
-            }
         }
     }
 
@@ -132,7 +94,10 @@ public class GetStartedSignalingManager: SignalingManager, RtmClientDelegate {
                 await self.loginAndSub(to: channel, with: token)
             }
         default:
-            await self.updateLabel(to: "failed: \(error.operation)\nreason: \(error.reason)")
+            await self.updateLabel(to: """
+            failed: \(error.operation)
+            reason: \(error.reason)
+            """)
         }
 
     }
@@ -140,10 +105,9 @@ public class GetStartedSignalingManager: SignalingManager, RtmClientDelegate {
 
 // MARK: - UI
 
-struct GettingStartedView: View {
+struct StorageView: View {
     @ObservedObject var signalingManager: GetStartedSignalingManager
     let channelId: String
-    @State var presenceViewPresented: Bool = false
 
     var body: some View {
         ZStack {
@@ -152,13 +116,6 @@ struct GettingStartedView: View {
                     messages: $signalingManager.messages,
                     localUser: signalingManager.userId
                 ).padding()
-
-                // Presence of others in the meeting
-                PresenceButtonView(presenceViewPresented: self.$presenceViewPresented, remoteCount: Binding(
-                    get: { self.signalingManager.remoteUsers.count },
-                    set: { _ in }
-                ))
-
                 MessageInputView(publish: publish(message:))
             }
             ToastView(message: $signalingManager.label)
@@ -166,10 +123,7 @@ struct GettingStartedView: View {
             await signalingManager.loginAndSub(
                 to: self.channelId, with: DocsAppConfig.shared.token
             )
-        }.onDisappear { try? await signalingManager.destroy()
-        }.sheet(isPresented: self.$presenceViewPresented) {
-            RemoteUsersView(remoteUsers: $signalingManager.remoteUsers)
-        }
+        }.onDisappear { try? await signalingManager.destroy() }
     }
 
     // MARK: - Helpers and Setup
@@ -190,13 +144,13 @@ struct GettingStartedView: View {
         )
     }
 
-    static var docPath: String = "get-started-sdk"
-    static var docTitle: String = "Get Started SDK"
+    static var docPath: String = "storage"
+    static var docTitle: String = "Store channel and user data"
 }
 
 // MARK: - Previews
 
-struct GettingStartedView_Previews: PreviewProvider {
+struct StorageView_Previews: PreviewProvider {
     static var previews: some View {
         GettingStartedView(
             channelId: DocsAppConfig.shared.channel,

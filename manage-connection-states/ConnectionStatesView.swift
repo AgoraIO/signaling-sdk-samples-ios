@@ -14,22 +14,22 @@ public class ConnectionStatesManager: SignalingManager, RtmClientDelegate {
 
     @discardableResult
     func logout() async throws -> RtmCommonResponse {
-        try await self.agoraEngine.logout()
+        try await self.signalingEngine.logout()
     }
 
     func subscribe(_ channel: String) async throws -> RtmCommonResponse {
-        try await self.agoraEngine.subscribe(toChannel: channel)
+        try await self.signalingEngine.subscribe(toChannel: channel)
     }
     public func rtmKit(
         _ rtmClient: RtmClientKit, channel: String,
         connectionChangedToState state: RtmClientConnectionState,
         reason: RtmClientConnectionChangeReason
     ) {
-        self.label = """
+        Task { await self.updateLabel(to: """
         Connection
         state: \(state.description)
         reason: \(reason.description)
-        """
+        """) }
     }
 }
 

@@ -23,6 +23,9 @@
 		F32AF8D92A8BC1F500A27ED1 /* config.json in Resources */ = {isa = PBXBuildFile; fileRef = F32AF8D72A8BC1F500A27ED1 /* config.json */; };
 		F32AF8DA2A8BC1F500A27ED1 /* DocsAppConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = F32AF8D82A8BC1F500A27ED1 /* DocsAppConfig.swift */; };
 		F346C2812A950F6E0086C956 /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F346C2802A950F6E0086C956 /* ToastView.swift */; };
+		F36313292AC4728B0000F29E /* RemoteUsersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F36313282AC4728B0000F29E /* RemoteUsersView.swift */; };
+		F3E98F7E2ABDC1D6000D9CEB /* StreamChannelsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E98F7D2ABDC1D6000D9CEB /* StreamChannelsView.swift */; };
+		F3E98F812AC19691000D9CEB /* StorageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E98F802AC19691000D9CEB /* StorageView.swift */; };
 		F3FAB37C2A8CAB600009033F /* TokenUrlInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3FAB37B2A8CAB600009033F /* TokenUrlInputView.swift */; };
 		F3FAB37F2A8CE71E0009033F /* ConnectionStatesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3FAB37E2A8CE71E0009033F /* ConnectionStatesView.swift */; };
 		F3FAB3812A8CEE970009033F /* UserInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3FAB3802A8CEE970009033F /* UserInputView.swift */; };
@@ -45,6 +48,9 @@
 		F32AF8D72A8BC1F500A27ED1 /* config.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = config.json; path = "../../../../signaling-manager/config.json"; sourceTree = "<group>"; };
 		F32AF8D82A8BC1F500A27ED1 /* DocsAppConfig.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DocsAppConfig.swift; path = "../../../../signaling-manager/DocsAppConfig.swift"; sourceTree = "<group>"; };
 		F346C2802A950F6E0086C956 /* ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastView.swift; sourceTree = "<group>"; };
+		F36313282AC4728B0000F29E /* RemoteUsersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteUsersView.swift; sourceTree = "<group>"; };
+		F3E98F7D2ABDC1D6000D9CEB /* StreamChannelsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = StreamChannelsView.swift; path = "../../../../stream-channels/StreamChannelsView.swift"; sourceTree = "<group>"; };
+		F3E98F802AC19691000D9CEB /* StorageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = StorageView.swift; path = ../../../../storage/StorageView.swift; sourceTree = "<group>"; };
 		F3FAB37B2A8CAB600009033F /* TokenUrlInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenUrlInputView.swift; sourceTree = "<group>"; };
 		F3FAB37E2A8CE71E0009033F /* ConnectionStatesView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ConnectionStatesView.swift; path = "../../../../manage-connection-states/ConnectionStatesView.swift"; sourceTree = "<group>"; };
 		F3FAB3802A8CEE970009033F /* UserInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserInputView.swift; sourceTree = "<group>"; };
@@ -135,6 +141,7 @@
 			children = (
 				F32AF8C82A8BB99D00A27ED1 /* View+Extensions.swift */,
 				F346C2802A950F6E0086C956 /* ToastView.swift */,
+				F36313282AC4728B0000F29E /* RemoteUsersView.swift */,
 			);
 			path = "Misc+Extensions";
 			sourceTree = "<group>";
@@ -144,6 +151,8 @@
 			children = (
 				F32AF8CE2A8BB9E100A27ED1 /* get-started-sdk */,
 				F32AF8D42A8BC15200A27ED1 /* authentication-workflow */,
+				F3E98F7C2ABDC19E000D9CEB /* stream-channels */,
+				F3E98F7F2AC195EB000D9CEB /* storage */,
 				F3FAB37D2A8CE6BA0009033F /* manage-connection-states */,
 			);
 			path = "app-stories";
@@ -173,6 +182,22 @@
 				F32AF8D52A8BC19400A27ED1 /* TokenAuthenticationView.swift */,
 			);
 			path = "authentication-workflow";
+			sourceTree = "<group>";
+		};
+		F3E98F7C2ABDC19E000D9CEB /* stream-channels */ = {
+			isa = PBXGroup;
+			children = (
+				F3E98F7D2ABDC1D6000D9CEB /* StreamChannelsView.swift */,
+			);
+			path = "stream-channels";
+			sourceTree = "<group>";
+		};
+		F3E98F7F2AC195EB000D9CEB /* storage */ = {
+			isa = PBXGroup;
+			children = (
+				F3E98F802AC19691000D9CEB /* StorageView.swift */,
+			);
+			path = storage;
 			sourceTree = "<group>";
 		};
 		F3FAB37D2A8CE6BA0009033F /* manage-connection-states */ = {
@@ -266,14 +291,17 @@
 				F32AF8D32A8BBAB800A27ED1 /* ChannelInputView.swift in Sources */,
 				F346C2812A950F6E0086C956 /* ToastView.swift in Sources */,
 				F32AF8C52A8BB97B00A27ED1 /* MessageInputView.swift in Sources */,
+				F3E98F7E2ABDC1D6000D9CEB /* StreamChannelsView.swift in Sources */,
 				F3FAB37C2A8CAB600009033F /* TokenUrlInputView.swift in Sources */,
 				F32AF8B12A8BB86200A27ED1 /* ContentView.swift in Sources */,
+				F36313292AC4728B0000F29E /* RemoteUsersView.swift in Sources */,
 				F3FAB37F2A8CE71E0009033F /* ConnectionStatesView.swift in Sources */,
 				F32AF8C92A8BB99D00A27ED1 /* View+Extensions.swift in Sources */,
 				F32AF8BF2A8BB94B00A27ED1 /* SignalingManager.swift in Sources */,
 				F3FAB3812A8CEE970009033F /* UserInputView.swift in Sources */,
 				F32AF8C62A8BB97B00A27ED1 /* MessagesListView.swift in Sources */,
 				F32AF8AF2A8BB86200A27ED1 /* ExampleApp.swift in Sources */,
+				F3E98F812AC19691000D9CEB /* StorageView.swift in Sources */,
 				F32AF8D02A8BBA1000A27ED1 /* GettingStartedView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -493,8 +521,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/AgoraIO-Community/AgoraRtm.git";
 			requirement = {
-				kind = exactVersion;
-				version = "2.1.6-beta.2";
+				kind = revision;
+				revision = b1985e43cbcd2b76a6be0f814a9b981e0c151f2e;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

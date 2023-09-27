@@ -10,21 +10,20 @@ import AgoraRtm
 
 struct ContentView: View {
     var body: some View {
-        #if os(iOS)
         NavigationStack {
+            #if os(iOS)
             content.navigationBarTitleDisplayMode(.inline)
-        }
-        #elseif os(macOS)
-        if #available(macOS 14.0, *) {
-            NavigationStack {
+            #elseif os(macOS)
+            if #available(macOS 14.0, *) {
                 content.toolbarTitleDisplayMode(.inline)
+            } else {
+                content
             }
-        } else {
-            NavigationStack { content }
-        }
-        #endif
-        Text(RtmClientKit.getVersion()).opacity(0.6)
+            #endif
+            Text(RtmClientKit.getVersion()).opacity(0.6).padding(.bottom)
+        }.navigationTitle("Signaling SDK reference app")
     }
+
     @ViewBuilder
     var content: some View {
         List {
@@ -38,8 +37,11 @@ struct ContentView: View {
                 NavigationLink(ConnectionStatesView.docTitle) {
                     UserInputView(continueTo: ConnectionStatesView.self)
                 }
+                NavigationLink(StreamChannelsView.docTitle) {
+                    ChannelInputView(continueTo: StreamChannelsView.self)
+                }
             }
-        }.navigationTitle("Signaling SDK reference app")
+        }
     }
 }
 

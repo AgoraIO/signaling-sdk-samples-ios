@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct MessageCellView: View {
-    var message: SignalingMessage
+    var message: any DisplayMessage
     var isLocalUser: Bool
 
     var body: some View {
