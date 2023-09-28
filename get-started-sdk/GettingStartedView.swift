@@ -98,12 +98,14 @@ public class GetStartedSignalingManager: SignalingManager, RtmClientDelegate {
         DispatchQueue.main.async {
             switch event.type {
             case .remoteJoinChannel(let publisher):
-                print("remote user joined channel: \(publisher)")
+                // remote user joined channel
                 self.remoteUsers.insert(publisher)
             case .remoteLeaveChannel(let publisher):
-                print("remote user left channel: \(publisher)")
+                // remote user left channel
                 self.remoteUsers.remove(publisher)
             case .snapshot(let snapshot):
+                // local user joined or reconnected to channel
+                // snapshot shows everyone in the channel and their states
                 self.remoteUsers = Set(snapshot.keys).filter {
                     $0 != self.userId
                 }

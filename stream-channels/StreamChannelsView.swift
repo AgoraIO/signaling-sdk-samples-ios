@@ -26,7 +26,7 @@ public class StreamChannelSignalingManager: SignalingManager, RtmClientDelegate 
             try await self.login(byToken: token)
 
             // Get stream channel token
-            var streamChannelToken: String? = nil
+            var streamChannelToken: String?
             if !DocsAppConfig.shared.tokenUrl.isEmpty {
                 streamChannelToken = try? await self.fetchToken(
                      from: DocsAppConfig.shared.tokenUrl,
@@ -214,7 +214,9 @@ struct StreamChannelsView: View {
                         } catch let err as RtmErrorInfo {
                             signalingManager.updateLabel(to: "Could not join topic: \(err.reason)")
                         } catch {
-                            signalingManager.updateLabel(to: "\(#function): Unknown error: \(error.localizedDescription)")
+                            signalingManager.updateLabel(
+                                to: "\(#function): Unknown error: \(error.localizedDescription)"
+                            )
                         }
                     }
                 }
@@ -232,12 +234,14 @@ struct StreamChannelsView: View {
                     try await self.signalingManager.unsubTopic(named: topic)
                     try await self.signalingManager.leaveTopic(named: topic)
                 }
-            }) {
+            }, label: {
                 HStack {
                     Image(systemName: "x.circle.fill")
                     Text(topic)
                 }
-            }.padding(3).buttonBorderShape(.roundedRectangle).background(Color.accentColor.opacity(0.3)).cornerRadius(5)
+            }).padding(3).buttonBorderShape(.roundedRectangle)
+                .background(Color.accentColor.opacity(0.3))
+                .cornerRadius(5)
         }
         Button {
             showingAddTopicView = true
@@ -297,7 +301,6 @@ struct AddTopicView: View {
         }.padding()
     }
 }
-
 
 // MARK: - Previews
 

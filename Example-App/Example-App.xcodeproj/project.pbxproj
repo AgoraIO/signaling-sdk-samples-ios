@@ -522,7 +522,7 @@
 			repositoryURL = "https://github.com/AgoraIO-Community/AgoraRtm.git";
 			requirement = {
 				kind = revision;
-				revision = b1985e43cbcd2b76a6be0f814a9b981e0c151f2e;
+				revision = e6a79ab6a3c4e17f9b92b3581fd6073cfd7d1f87;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
