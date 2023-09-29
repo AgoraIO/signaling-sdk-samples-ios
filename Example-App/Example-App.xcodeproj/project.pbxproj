@@ -521,8 +521,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/AgoraIO-Community/AgoraRtm.git";
 			requirement = {
-				kind = revision;
-				revision = e6a79ab6a3c4e17f9b92b3581fd6073cfd7d1f87;
+				kind = upToNextMinorVersion;
+				minimumVersion = "2.1.6-beta";
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

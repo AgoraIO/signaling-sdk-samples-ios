@@ -24,6 +24,7 @@ public class StorageSignalingManager: SignalingManager, RtmClientDelegate {
                 toChannel: channel, features: .messages
             )
             await self.updateLabel(to: "success")
+
         } catch let err as RtmErrorInfo {
             await self.handleLoginSubError(error: err, channel: channel)
         } catch {
@@ -31,18 +32,84 @@ public class StorageSignalingManager: SignalingManager, RtmClientDelegate {
         }
     }
 
-    @Published var localMetadata: [String: String] = [:]
+    @Published var localMetadata: RtmMetadata?
 
     public func setUserInfo(to localData: [String: String]) async throws {
-        self.localMetadata = localData
+        guard let storage = signalingEngine.storage,
+              let userMetadata = signalingEngine.storage?.createMetadata()
+        else { return }
 
-        guard let userMd = try await self.signalingEngine.storage?.getUserMetadata(
-            userId: self.userId
-        )?.data else { return }
+        self.localMetadata = userMetadata
 
-        userMd.setMetadataItems(localData)
-        _ = try await self.signalingEngine.storage?.setUserMetadata(
-            userId: self.userId, data: userMd
+        localData.forEach { item in
+            userMetadata.setMetadataItem(
+                RtmMetadataItem(key: item.key, value: item.value, revision: -1)
+            )
+        }
+
+        _ = try await storage.setUserMetadata(
+            userId: self.userId, data: userMetadata,
+            options: RtmMetadataOptions(recordTs: true, recordUserId: true)
+        )
+    }
+
+    public func updateUserInfo(with updates: [String: String]) async throws {
+        guard let localMetadata else { return }
+
+        for metadataItem in localMetadata.metadataItems
+            where updates.keys.contains(metadataItem.key) {
+            metadataItem.value = updates[metadataItem.key]!
+        }
+
+        _ = try await signalingEngine.storage?.setUserMetadata(
+            userId: self.userId, data: localMetadata,
+            options: RtmMetadataOptions(recordTs: true, recordUserId: true)
+        )
+    }
+
+    func getMetadata(for user: String) async throws -> RtmGetMetadataResponse {
+        try await signalingEngine.storage!.getMetadata(forUser: user)
+    }
+
+    func subscribeToMetadata(for user: String) async throws {
+        try await signalingEngine.storage?.subscribeToMetadata(forUser: user)
+    }
+
+    func setMetadata(
+        for channel: String,
+        metaItem: (key: String, value: String), revision: Int64 = -1,
+        lock: String? = nil
+    ) async throws {
+        // If we have a lock string, try to acquire it
+        if let lock {
+            try await signalingEngine.lock?.acquireLock(
+                named: lock, fromChannel: .messageChannel(channel)
+            )
+        }
+
+        // Ensure we can create metadata
+        guard let metadata = signalingEngine.storage?.createMetadata() else { return }
+
+        // Set the metadata item
+        metadata.setMetadataItem(RtmMetadataItem(
+            key: metaItem.key, value: metaItem.value, revision: revision
+        ))
+        try await signalingEngine.storage?.setMetadata(
+            forChannel: .messageChannel(channel),
+            data: metadata, lock: lock
+        )
+
+        // If we have a lock string, release it.
+        if let lock {
+            try await signalingEngine.lock?.releaseLock(
+                named: lock, fromChannel: .messageChannel(channel)
+            )
+        }
+    }
+
+    func getMetadata(forChannel channel: String) async throws -> RtmGetMetadataResponse {
+        try await signalingEngine.storage!.getMetadata(
+            forChannel: .messageChannel(channel)
         )
     }
 
@@ -58,19 +125,15 @@ public class StorageSignalingManager: SignalingManager, RtmClientDelegate {
             userId: self.userId, data: removeMetadata
         )
     }
-
-    public func rtmKit(
-        _ rtmClient: RtmClientKit, didReceiveMessageEvent event: RtmMessageEvent
-    ) {
-        switch event.message.content {
-        case .string(let str):
-            DispatchQueue.main.async {
-                self.messages.append(SignalingMessage(
-                    text: str, sender: event.publisher, id: .init()
-                ))
-            }
-        case .data(let data):
-            print("other data object in message: \(data)")
+    public func rtmKit(_ rtmClient: RtmClientKit, didReceiveStorageEvent event: RtmStorageEvent) {
+        switch (event.eventType, event.storageType) {
+        case (.set, .user), (.update, .user), (.snapshot, .user):
+            // user metadata set, updated, or a snapshot has been given
+            break
+        case (.set, .channel), (.update, .channel), (.snapshot, .channel):
+            // channel metadata set, updated, or a snapshot has been given
+            break
+        default: break
         }
     }
 
