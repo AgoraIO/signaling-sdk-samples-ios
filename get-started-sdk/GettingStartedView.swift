@@ -38,24 +38,6 @@ public class GetStartedSignalingManager: SignalingManager, RtmClientDelegate {
 
     @Published var remoteUsers: Set<String> = []
 
-    /// Log into Signaling with a token, and subscribe to a message channel.
-    /// - Parameters:
-    ///   - channel: Channel name to subscribe to.
-    ///   - token: token to be used for login authentication.
-    public func loginAndSub(to channel: String, with token: String?) async {
-        do {
-            try await self.login(byToken: token)
-            try await self.signalingEngine.subscribe(
-                toChannel: channel, features: [.messages, .presence]
-            )
-            await self.updateLabel(to: "success")
-        } catch let err as RtmErrorInfo {
-            await self.handleLoginSubError(error: err, channel: channel)
-        } catch {
-            await self.updateLabel(to: "other error occurred: \(error.localizedDescription)")
-        }
-    }
-
     /// Publish a message to a message channel.
     /// - Parameters:
     ///   - message: String to be sent to the channel. UTF-8 suppported 👋.
@@ -112,31 +94,6 @@ public class GetStartedSignalingManager: SignalingManager, RtmClientDelegate {
             default: break
             }
         }
-    }
-
-    // MARK: Handle Errors
-    /// Handle different error cases, and fetch a new token if appropriate.
-    /// - Parameters:
-    ///   - error: Error thrown by logging in or subscribing to a channel.
-    ///   - channel: Channel to which a subscription was attempted.
-    func handleLoginSubError(error: RtmErrorInfo, channel: String) async {
-        switch error.errorCode {
-        case .loginNoServerResources, .loginTimeout, .loginRejected, .loginAborted:
-            await self.updateLabel(to: "could not log in, check your app ID and token")
-        case .channelSubscribeFailed, .channelSubscribeTimeout, .channelNotSubscribed:
-            await self.updateLabel(to: "could not subscribe to channel")
-        case .invalidToken:
-            if label == nil, let token = try? await self.fetchToken(
-                from: DocsAppConfig.shared.tokenUrl,
-                username: DocsAppConfig.shared.uid
-            ) {
-                await self.updateLabel(to: "fetching token")
-                await self.loginAndSub(to: channel, with: token)
-            }
-        default:
-            await self.updateLabel(to: "failed: \(error.operation)\nreason: \(error.reason)")
-        }
-
     }
 }
 
@@ -198,11 +155,9 @@ struct GettingStartedView: View {
 
 // MARK: - Previews
 
-struct GettingStartedView_Previews: PreviewProvider {
-    static var previews: some View {
-        GettingStartedView(
-            channelId: DocsAppConfig.shared.channel,
-            userId: DocsAppConfig.shared.uid
-        )
-    }
+#Preview {
+    GettingStartedView(
+        channelId: DocsAppConfig.shared.channel,
+        userId: DocsAppConfig.shared.uid
+    )
 }

@@ -35,6 +35,7 @@ internal func getFolderName(from path: String) -> String {
 
 extension GettingStartedView: HasChannelInput {}
 extension StreamChannelsView: HasChannelInput {}
+extension PresenceView: HasChannelInput {}
 
 /// A view that takes a user inputted `channelId` string and navigates to a view
 /// which conforms to the `HasChannelInput` protocol.

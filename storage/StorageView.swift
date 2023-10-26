@@ -17,19 +17,10 @@ public class StorageSignalingManager: SignalingManager, RtmClientDelegate {
     /// - Parameters:
     ///   - channel: Channel name to subscribe to.
     ///   - token: token to be used for login authentication.
-    public func loginAndSub(to channel: String, with token: String?) async {
-        do {
-            try await self.login(byToken: token)
-            try await self.signalingEngine.subscribe(
-                toChannel: channel, features: .messages
-            )
-            await self.updateLabel(to: "success")
-
-        } catch let err as RtmErrorInfo {
-            await self.handleLoginSubError(error: err, channel: channel)
-        } catch {
-            print("other error occurred: \(error.localizedDescription)")
-        }
+    override func subscribe(to channel: String) async throws -> RtmCommonResponse {
+        try await self.signalingEngine.subscribe(
+            toChannel: channel, features: .messages
+        )
     }
 
     @Published var localMetadata: RtmMetadata?
@@ -104,6 +95,7 @@ public class StorageSignalingManager: SignalingManager, RtmClientDelegate {
             try await signalingEngine.lock?.releaseLock(
                 named: lock, fromChannel: .messageChannel(channel)
             )
+            await self.updateLabel(to: "success")
         }
     }
 

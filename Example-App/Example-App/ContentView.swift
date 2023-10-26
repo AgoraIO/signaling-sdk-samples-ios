@@ -40,6 +40,9 @@ struct ContentView: View {
                 NavigationLink(StreamChannelsView.docTitle) {
                     ChannelInputView(continueTo: StreamChannelsView.self)
                 }
+                NavigationLink(PresenceView.docTitle) {
+                    ChannelInputView(continueTo: PresenceView.self)
+                }
             }
         }
     }
