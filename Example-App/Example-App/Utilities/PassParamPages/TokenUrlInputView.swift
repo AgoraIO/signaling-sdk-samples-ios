@@ -25,13 +25,6 @@ struct TokenUrlInputView<Content: HasTokenUrlInput>: View {
     /// The type of view to navigate to.
     var continueTo: Content.Type
 
-    #if os(macOS)
-    // URL only available on macOS 14+.
-    let textType: NSTextContentType? = .none
-    #else
-    let textType: UITextContentType = .URL
-    #endif
-
     var body: some View {
         VStack {
             VStack(alignment: .leading) {
@@ -43,7 +36,7 @@ struct TokenUrlInputView<Content: HasTokenUrlInput>: View {
                     .textContentType(.username).textFieldStyle(.roundedBorder).autocorrectionDisabled()
                 Text("Token URL")
             TextField("Enter token URL", text: $tokenUrl)
-                    .textContentType(self.textType).textFieldStyle(.roundedBorder).autocorrectionDisabled()
+                    .textContentType(.URL).textFieldStyle(.roundedBorder).autocorrectionDisabled()
             }.padding([.leading, .trailing])
 
             NavigationLink(destination: NavigationLazyView(continueTo.init(
@@ -59,11 +52,11 @@ struct TokenUrlInputView<Content: HasTokenUrlInput>: View {
             }).disabled(channelId.isEmpty || userId.isEmpty)
                 .buttonStyle(.borderedProminent)
                 .navigationTitle("Channel Input")
-        }.onChange(of: channelId) { newVal in
+        }.onChange(of: channelId, initial: false) { (_, newVal) in
             if let filtered = self.filter(
                 string: newVal, by: RtmLegalCharacterSets.channelName
             ) { channelId = filtered }
-        }.onChange(of: userId) { newVal in
+        }.onChange(of: userId, initial: false) { (_, newVal) in
             if let filtered = self.filter(
                 string: newVal, by: RtmLegalCharacterSets.username
             ) { userId = filtered }
@@ -75,8 +68,6 @@ struct TokenUrlInputView<Content: HasTokenUrlInput>: View {
     }
 }
 
-struct TokenUrlInputView_Previews: PreviewProvider {
-    static var previews: some View {
-        TokenUrlInputView(continueTo: TokenAuthenticationView.self)
-    }
+#Preview {
+    TokenUrlInputView(continueTo: TokenAuthenticationView.self)
 }

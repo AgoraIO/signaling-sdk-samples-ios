@@ -23,7 +23,12 @@
 		F32AF8D92A8BC1F500A27ED1 /* config.json in Resources */ = {isa = PBXBuildFile; fileRef = F32AF8D72A8BC1F500A27ED1 /* config.json */; };
 		F32AF8DA2A8BC1F500A27ED1 /* DocsAppConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = F32AF8D82A8BC1F500A27ED1 /* DocsAppConfig.swift */; };
 		F346C2812A950F6E0086C956 /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F346C2802A950F6E0086C956 /* ToastView.swift */; };
+		F360D0CB2AEBE81F00B0586C /* CloudProxyInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F360D0CA2AEBE81F00B0586C /* CloudProxyInputView.swift */; };
+		F360D0CD2AEBF23800B0586C /* DataEncryptionInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F360D0CC2AEBF23800B0586C /* DataEncryptionInputView.swift */; };
 		F36313292AC4728B0000F29E /* RemoteUsersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F36313282AC4728B0000F29E /* RemoteUsersView.swift */; };
+		F3BB3B182AE92660009E00C6 /* CloudProxyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB3B172AE92660009E00C6 /* CloudProxyView.swift */; };
+		F3BB3B1A2AE92669009E00C6 /* DataEncryptionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB3B192AE92669009E00C6 /* DataEncryptionView.swift */; };
+		F3BB3B1C2AE92676009E00C6 /* PresenceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB3B1B2AE92676009E00C6 /* PresenceView.swift */; };
 		F3E98F7E2ABDC1D6000D9CEB /* StreamChannelsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E98F7D2ABDC1D6000D9CEB /* StreamChannelsView.swift */; };
 		F3E98F812AC19691000D9CEB /* StorageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E98F802AC19691000D9CEB /* StorageView.swift */; };
 		F3FAB37C2A8CAB600009033F /* TokenUrlInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3FAB37B2A8CAB600009033F /* TokenUrlInputView.swift */; };
@@ -48,7 +53,12 @@
 		F32AF8D72A8BC1F500A27ED1 /* config.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = config.json; path = "../../../../signaling-manager/config.json"; sourceTree = "<group>"; };
 		F32AF8D82A8BC1F500A27ED1 /* DocsAppConfig.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DocsAppConfig.swift; path = "../../../../signaling-manager/DocsAppConfig.swift"; sourceTree = "<group>"; };
 		F346C2802A950F6E0086C956 /* ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastView.swift; sourceTree = "<group>"; };
+		F360D0CA2AEBE81F00B0586C /* CloudProxyInputView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CloudProxyInputView.swift; sourceTree = "<group>"; };
+		F360D0CC2AEBF23800B0586C /* DataEncryptionInputView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataEncryptionInputView.swift; sourceTree = "<group>"; };
 		F36313282AC4728B0000F29E /* RemoteUsersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteUsersView.swift; sourceTree = "<group>"; };
+		F3BB3B172AE92660009E00C6 /* CloudProxyView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CloudProxyView.swift; path = "../../../../cloud-proxy/CloudProxyView.swift"; sourceTree = "<group>"; };
+		F3BB3B192AE92669009E00C6 /* DataEncryptionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DataEncryptionView.swift; path = "../../../../data-encryption/DataEncryptionView.swift"; sourceTree = "<group>"; };
+		F3BB3B1B2AE92676009E00C6 /* PresenceView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PresenceView.swift; path = ../../../../presence/PresenceView.swift; sourceTree = "<group>"; };
 		F3E98F7D2ABDC1D6000D9CEB /* StreamChannelsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = StreamChannelsView.swift; path = "../../../../stream-channels/StreamChannelsView.swift"; sourceTree = "<group>"; };
 		F3E98F802AC19691000D9CEB /* StorageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = StorageView.swift; path = ../../../../storage/StorageView.swift; sourceTree = "<group>"; };
 		F3FAB37B2A8CAB600009033F /* TokenUrlInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenUrlInputView.swift; sourceTree = "<group>"; };
@@ -152,7 +162,10 @@
 				F32AF8CE2A8BB9E100A27ED1 /* get-started-sdk */,
 				F32AF8D42A8BC15200A27ED1 /* authentication-workflow */,
 				F3E98F7C2ABDC19E000D9CEB /* stream-channels */,
+				F374C8932AE922C30048FC0D /* presence */,
 				F3E98F7F2AC195EB000D9CEB /* storage */,
+				F374C8942AE922D70048FC0D /* cloud-proxy */,
+				F374C8952AE922EF0048FC0D /* data-encryption */,
 				F3FAB37D2A8CE6BA0009033F /* manage-connection-states */,
 			);
 			path = "app-stories";
@@ -169,8 +182,10 @@
 		F32AF8D12A8BBA2F00A27ED1 /* PassParamPages */ = {
 			isa = PBXGroup;
 			children = (
+				F360D0CA2AEBE81F00B0586C /* CloudProxyInputView.swift */,
 				F32AF8D22A8BBAB800A27ED1 /* ChannelInputView.swift */,
 				F3FAB3802A8CEE970009033F /* UserInputView.swift */,
+				F360D0CC2AEBF23800B0586C /* DataEncryptionInputView.swift */,
 				F3FAB37B2A8CAB600009033F /* TokenUrlInputView.swift */,
 			);
 			path = PassParamPages;
@@ -182,6 +197,30 @@
 				F32AF8D52A8BC19400A27ED1 /* TokenAuthenticationView.swift */,
 			);
 			path = "authentication-workflow";
+			sourceTree = "<group>";
+		};
+		F374C8932AE922C30048FC0D /* presence */ = {
+			isa = PBXGroup;
+			children = (
+				F3BB3B1B2AE92676009E00C6 /* PresenceView.swift */,
+			);
+			path = presence;
+			sourceTree = "<group>";
+		};
+		F374C8942AE922D70048FC0D /* cloud-proxy */ = {
+			isa = PBXGroup;
+			children = (
+				F3BB3B172AE92660009E00C6 /* CloudProxyView.swift */,
+			);
+			path = "cloud-proxy";
+			sourceTree = "<group>";
+		};
+		F374C8952AE922EF0048FC0D /* data-encryption */ = {
+			isa = PBXGroup;
+			children = (
+				F3BB3B192AE92669009E00C6 /* DataEncryptionView.swift */,
+			);
+			path = "data-encryption";
 			sourceTree = "<group>";
 		};
 		F3E98F7C2ABDC19E000D9CEB /* stream-channels */ = {
@@ -289,20 +328,25 @@
 				F32AF8C42A8BB97B00A27ED1 /* MessageCellView.swift in Sources */,
 				F32AF8DA2A8BC1F500A27ED1 /* DocsAppConfig.swift in Sources */,
 				F32AF8D32A8BBAB800A27ED1 /* ChannelInputView.swift in Sources */,
+				F3BB3B182AE92660009E00C6 /* CloudProxyView.swift in Sources */,
 				F346C2812A950F6E0086C956 /* ToastView.swift in Sources */,
 				F32AF8C52A8BB97B00A27ED1 /* MessageInputView.swift in Sources */,
 				F3E98F7E2ABDC1D6000D9CEB /* StreamChannelsView.swift in Sources */,
 				F3FAB37C2A8CAB600009033F /* TokenUrlInputView.swift in Sources */,
+				F3BB3B1A2AE92669009E00C6 /* DataEncryptionView.swift in Sources */,
 				F32AF8B12A8BB86200A27ED1 /* ContentView.swift in Sources */,
 				F36313292AC4728B0000F29E /* RemoteUsersView.swift in Sources */,
+				F360D0CB2AEBE81F00B0586C /* CloudProxyInputView.swift in Sources */,
 				F3FAB37F2A8CE71E0009033F /* ConnectionStatesView.swift in Sources */,
 				F32AF8C92A8BB99D00A27ED1 /* View+Extensions.swift in Sources */,
 				F32AF8BF2A8BB94B00A27ED1 /* SignalingManager.swift in Sources */,
 				F3FAB3812A8CEE970009033F /* UserInputView.swift in Sources */,
 				F32AF8C62A8BB97B00A27ED1 /* MessagesListView.swift in Sources */,
 				F32AF8AF2A8BB86200A27ED1 /* ExampleApp.swift in Sources */,
+				F360D0CD2AEBF23800B0586C /* DataEncryptionInputView.swift in Sources */,
 				F3E98F812AC19691000D9CEB /* StorageView.swift in Sources */,
 				F32AF8D02A8BBA1000A27ED1 /* GettingStartedView.swift in Sources */,
+				F3BB3B1C2AE92676009E00C6 /* PresenceView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -445,10 +489,12 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "uk.rocketar.Example-App";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -477,10 +523,12 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "uk.rocketar.Example-App";
 				PRODUCT_NAME = "$(TARGET_NAME)";

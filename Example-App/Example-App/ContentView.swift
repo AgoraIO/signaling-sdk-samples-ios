@@ -14,11 +14,7 @@ struct ContentView: View {
             #if os(iOS)
             content.navigationBarTitleDisplayMode(.inline)
             #elseif os(macOS)
-            if #available(macOS 14.0, *) {
-                content.toolbarTitleDisplayMode(.inline)
-            } else {
-                content
-            }
+            content.toolbarTitleDisplayMode(.inline)
             #endif
             Text(RtmClientKit.getVersion()).opacity(0.6).padding(.bottom)
         }.navigationTitle("Signaling SDK reference app")
@@ -39,6 +35,18 @@ struct ContentView: View {
                 }
                 NavigationLink(StreamChannelsView.docTitle) {
                     ChannelInputView(continueTo: StreamChannelsView.self)
+                }
+                NavigationLink(PresenceView.docTitle) {
+                    ChannelInputView(continueTo: PresenceView.self)
+                }
+                NavigationLink(StorageView.docTitle) {
+                    ChannelInputView(continueTo: StorageView.self)
+                }
+                NavigationLink(CloudProxyView.docTitle) {
+                    CloudProxyInputView(continueTo: CloudProxyView.self)
+                }
+                NavigationLink(DataEncryptionView.docTitle) {
+                    DataEncryptionInputView(continueTo: DataEncryptionView.self)
                 }
             }
         }

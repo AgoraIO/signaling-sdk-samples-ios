@@ -44,7 +44,7 @@ struct UserInputView<Content: HasUserInput>: View {
             }).disabled(userId.isEmpty)
                 .buttonStyle(.borderedProminent)
                 .navigationTitle("Channel Input")
-        }.onChange(of: userId) { newVal in
+        }.onChange(of: userId, initial: false) { (_, newVal) in
             if let filtered = self.filter(
                 string: newVal, by: RtmLegalCharacterSets.username
             ) { userId = filtered }
@@ -54,8 +54,6 @@ struct UserInputView<Content: HasUserInput>: View {
     }
 }
 
-struct UserInputView_Previews: PreviewProvider {
-    static var previews: some View {
-        UserInputView(continueTo: ConnectionStatesView.self)
-    }
+#Preview {
+    UserInputView(continueTo: ConnectionStatesView.self)
 }
