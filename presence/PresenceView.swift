@@ -1,4 +1,3 @@
-
 import AgoraRtm
 import SwiftUI
 
@@ -35,7 +34,7 @@ public class PresenceSignalingManager: SignalingManager, RtmClientDelegate {
                 self.remoteUsers = states
             case .remoteJoinChannel(let user):
                 // remote user joined channel
-                if self.remoteUsers[user] == nil  {
+                if self.remoteUsers[user] == nil {
                     self.remoteUsers[user] = [:]
                 }
             case .remoteLeaveChannel(let user):
@@ -65,10 +64,10 @@ struct PresenceView: View {
             } else {
                 List(signalingManager.remoteUsers.keys.sorted(), id: \.self) { key in
                     Button(action: {
-                        Task {try! await self.didSelectUser(key)}
-                    }) {
+                        Task {try await self.didSelectUser(key)}
+                    }, label: {
                         Text(key)
-                    }
+                    })
                 }.sheet(isPresented: $isSheetPresented) {
                     if let selectedUser = signalingManager.selectedUser {
                         DictionaryView(data: selectedUser)

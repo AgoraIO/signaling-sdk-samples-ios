@@ -121,11 +121,9 @@ public class StorageSignalingManager: SignalingManager, RtmClientDelegate {
         case (.set, .user), (.update, .user), (.snapshot, .user):
             // user metadata set, updated, or a snapshot has been given
             print("user update")
-            break
         case (.set, .channel), (.update, .channel), (.snapshot, .channel):
             // channel metadata set, updated, or a snapshot has been given
             print("channel update")
-            break
         default: break
         }
     }
@@ -173,10 +171,10 @@ struct StorageView: View {
             } else {
                 List(signalingManager.remoteUsers.keys.sorted(), id: \.self) { key in
                     Button(action: {
-                        Task {try! await self.didSelectUser(key)}
-                    }) {
+                        Task {try await self.didSelectUser(key)}
+                    }, label: {
                         Text(key)
-                    }
+                    })
                 }.sheet(isPresented: $isSheetPresented) {
                     if let selectedUser = signalingManager.selectedUser {
                         DictionaryView(data: selectedUser)
@@ -203,7 +201,6 @@ struct StorageView: View {
             self.isSheetPresented = true
         }
     }
-
 
     init(channelId: String, userId: String) {
         DocsAppConfig.shared.channel = channelId

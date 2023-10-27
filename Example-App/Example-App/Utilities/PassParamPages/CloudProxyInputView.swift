@@ -25,7 +25,6 @@ protocol HasCloudProxyInput: HasDocPath {
     )
 }
 
-
 extension CloudProxyView: HasCloudProxyInput {}
 
 /// A view that takes a user inputted `channelId` string and navigates to a view
