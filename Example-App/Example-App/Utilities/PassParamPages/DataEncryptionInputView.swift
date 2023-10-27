@@ -1,53 +1,38 @@
 //
-//  ChannelInputView.swift
+//  DataEncryptionInputView.swift
 //  Example-App
 //
-//  Created by Max Cobb on 01/08/2023.
+//  Created by Max Cobb on 27/10/2023.
 //
 
 import SwiftUI
 import AgoraRtm
 
-protocol HasDocPath: View {
-    static var docPath: String { get }
-    static var docTitle: String { get }
-}
-
 /// A protocol for views that require a `channelId` string as input.
-protocol HasChannelInput: HasDocPath {
-    init(channelId: String, userId: String)
+protocol HasDataEncryptionInput: HasDocPath {
+    init(
+        channelId: String, userId: String,
+        encryptionKey: String, encryptionSalt: String
+    )
 }
 
-internal struct NavigationLazyView<Content: View>: View {
-    let build: () -> Content
-    init(_ build: @autoclosure @escaping () -> Content) {
-        self.build = build
-    }
-    var body: Content {
-        build()
-    }
-}
+extension DataEncryptionView: HasDataEncryptionInput {}
 
-internal func getFolderName(from path: String) -> String {
-    let fileURL = URL(fileURLWithPath: path)
-    return fileURL.deletingLastPathComponent().lastPathComponent
-}
-
-extension GettingStartedView: HasChannelInput {}
-extension StreamChannelsView: HasChannelInput {}
-extension PresenceView: HasChannelInput {}
-extension StorageView: HasChannelInput {}
-
-/// A view that takes a user inputted `channelId` string and navigates to a view
-/// which conforms to the `HasChannelInput` protocol.
+/// A view that takes a user inputted `channelId` and encryption data, and navigates to a view
+/// which conforms to the `HasDataEncryptionInput` protocol.
 ///
 /// The generic parameter `Content` specifies the type of view to navigate to,
-/// and must conform to the `HasChannelInput` protocol.
-struct ChannelInputView<Content: HasChannelInput>: View {
+/// and must conform to the `HasDataEncryptionInput` protocol.
+struct DataEncryptionInputView<Content: HasDataEncryptionInput>: View {
     /// The user inputted `channelId` string.
     @State var channelId: String = ""
     /// The user inputted `userId` string for logging in.
     @State var userId: String = ""
+
+    /// The user inputted `encryptionKey` string for encrypting data.
+    @State var encryptionKey: String = ""
+    /// The user inputted `encryptionSalt` string for encrypting data.
+    @State var encryptionSalt: String = ""
     /// The type of view to navigate to.
     var continueTo: Content.Type
 
@@ -58,13 +43,20 @@ struct ChannelInputView<Content: HasChannelInput>: View {
                 TextField("Enter username", text: $userId)
                     .textContentType(.username).textFieldStyle(.roundedBorder)
                 Text("Channel ID")
-            TextField("Enter channel id", text: $channelId)
-                .textContentType(.username).textFieldStyle(.roundedBorder)
+                TextField("Enter channel id", text: $channelId)
+                    .textContentType(.username).textFieldStyle(.roundedBorder)
+
+                TextField("Encryption Key", text: $encryptionKey)
+                    .textContentType(.username).textFieldStyle(.roundedBorder)
+                TextField("Encryption Salt", text: $encryptionSalt)
+                    .textContentType(.username).textFieldStyle(.roundedBorder)
             }.padding([.leading, .trailing])
 
             NavigationLink(destination: NavigationLazyView(continueTo.init(
                 channelId: channelId.trimmingCharacters(in: .whitespaces),
-                userId: userId.trimmingCharacters(in: .whitespaces)
+                userId: userId.trimmingCharacters(in: .whitespaces),
+                encryptionKey: encryptionKey, encryptionSalt: encryptionSalt
+
             ).navigationTitle(continueTo.docTitle).toolbar {
                 ToolbarItem(placement: .automatic) {
 //                    GitHubButtonView(continueTo.docPath)
@@ -74,11 +66,13 @@ struct ChannelInputView<Content: HasChannelInput>: View {
             }).disabled(channelId.isEmpty || userId.isEmpty)
                 .buttonStyle(.borderedProminent)
                 .navigationTitle("Channel Input")
-        }.onChange(of: channelId, initial: false) { (_, newVal) in
+        }.onChange(of: channelId, initial: false) { (oldVal, newVal) in
+            if oldVal.contains(newVal) { return }
             if let filtered = self.filter(
                 string: newVal, by: RtmLegalCharacterSets.channelName
             ) { channelId = filtered }
-        }.onChange(of: userId, initial: false) { (_, newVal) in
+        }.onChange(of: userId, initial: false) { (oldVal, newVal) in
+            if oldVal.contains(newVal) { return }
             if let filtered = self.filter(
                 string: newVal, by: RtmLegalCharacterSets.username
             ) { userId = filtered }
@@ -90,5 +84,5 @@ struct ChannelInputView<Content: HasChannelInput>: View {
 }
 
 #Preview {
-    ChannelInputView(continueTo: GettingStartedView.self)
+    CloudProxyInputView(continueTo: CloudProxyView.self)
 }

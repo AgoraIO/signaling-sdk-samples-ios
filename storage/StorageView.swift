@@ -10,22 +10,21 @@ import AgoraRtm
 
 public class StorageSignalingManager: SignalingManager, RtmClientDelegate {
 
-    /// A collection of all sent and received messages, stored in a custom struct.
-    @Published var messages: [SignalingMessage] = []
-
     /// Log into Signaling with a token, and subscribe to a message channel.
     /// - Parameters:
     ///   - channel: Channel name to subscribe to.
     ///   - token: token to be used for login authentication.
     override func subscribe(to channel: String) async throws -> RtmCommonResponse {
         try await self.signalingEngine.subscribe(
-            toChannel: channel, features: .messages
+            toChannel: channel, features: .metadata
         )
     }
 
+    @Published public var selectedUser: RtmMetadata?
     @Published var localMetadata: RtmMetadata?
+    @Published var remoteUsers: [String: [String: String]] = [:]
 
-    public func setUserInfo(to localData: [String: String]) async throws {
+    public func setUserMetadata(to localData: [String: String]) async throws {
         guard let storage = signalingEngine.storage,
               let userMetadata = signalingEngine.storage?.createMetadata()
         else { return }
@@ -67,7 +66,7 @@ public class StorageSignalingManager: SignalingManager, RtmClientDelegate {
     }
 
     func setMetadata(
-        for channel: String,
+        forChannel channel: String,
         metaItem: (key: String, value: String), revision: Int64 = -1,
         lock: String? = nil
     ) async throws {
@@ -121,9 +120,11 @@ public class StorageSignalingManager: SignalingManager, RtmClientDelegate {
         switch (event.eventType, event.storageType) {
         case (.set, .user), (.update, .user), (.snapshot, .user):
             // user metadata set, updated, or a snapshot has been given
+            print("user update")
             break
         case (.set, .channel), (.update, .channel), (.snapshot, .channel):
             // channel metadata set, updated, or a snapshot has been given
+            print("channel update")
             break
         default: break
         }
@@ -161,40 +162,55 @@ public class StorageSignalingManager: SignalingManager, RtmClientDelegate {
 // MARK: - UI
 
 struct StorageView: View {
-    @ObservedObject var signalingManager: GetStartedSignalingManager
+    @ObservedObject var signalingManager: StorageSignalingManager
     let channelId: String
+    @State private var isSheetPresented: Bool = false
 
     var body: some View {
         ZStack {
-            VStack {
-                MessagesListView(
-                    messages: $signalingManager.messages,
-                    localUser: signalingManager.userId
-                ).padding()
-                MessageInputView(publish: publish(message:))
+            if self.signalingManager.remoteUsers.isEmpty {
+                Text("None").padding()
+            } else {
+                List(signalingManager.remoteUsers.keys.sorted(), id: \.self) { key in
+                    Button(action: {
+                        Task {try! await self.didSelectUser(key)}
+                    }) {
+                        Text(key)
+                    }
+                }.sheet(isPresented: $isSheetPresented) {
+                    if let selectedUser = signalingManager.selectedUser {
+                        DictionaryView(data: selectedUser)
+                    }
+                }
             }
-            ToastView(message: $signalingManager.label)
         }.onAppear {
-            await signalingManager.loginAndSub(
-                to: self.channelId, with: DocsAppConfig.shared.token
-            )
-        }.onDisappear { try? await signalingManager.destroy() }
+            await signalingManager.loginAndSub(to: self.channelId, with: DocsAppConfig.shared.token)
+            try? await signalingManager.setUserMetadata(to: ["joinedAt": Date.now.description])
+        }.onDisappear {
+            try? await signalingManager.destroy()
+        }
     }
 
     // MARK: - Helpers and Setup
 
-    func publish(message: String) async {
-        await self.signalingManager.publish(
-            message: message, to: self.channelId
-        )
+    func didSelectUser(_ user: String) async throws {
+        guard let storage = self.signalingManager.signalingEngine.storage,
+              let data = try await storage.getMetadata(forUser: user).data
+        else { return }
+
+        DispatchQueue.main.async {
+            self.signalingManager.selectedUser = data
+            self.isSheetPresented = true
+        }
     }
+
 
     init(channelId: String, userId: String) {
         DocsAppConfig.shared.channel = channelId
         DocsAppConfig.shared.uid = userId
 
         self.channelId = channelId
-        self.signalingManager = GetStartedSignalingManager(
+        self.signalingManager = StorageSignalingManager(
             appId: DocsAppConfig.shared.appId, userId: userId
         )
     }
