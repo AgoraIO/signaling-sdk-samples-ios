@@ -79,6 +79,8 @@ struct DataEncryptionInputView<Content: HasDataEncryptionInput>: View {
         }.onAppear {
             channelId = DocsAppConfig.shared.channel
             userId = DocsAppConfig.shared.uid
+            encryptionKey = DocsAppConfig.shared.cipherKey
+            encryptionSalt = DocsAppConfig.shared.salt
         }
     }
 }

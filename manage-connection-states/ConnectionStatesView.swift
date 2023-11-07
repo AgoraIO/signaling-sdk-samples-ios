@@ -12,11 +12,6 @@ public class ConnectionStatesManager: SignalingManager, RtmClientDelegate {
 
     @Published var loggedIn: Bool = false
 
-    @discardableResult
-    func logout() async throws -> RtmCommonResponse {
-        try await self.signalingEngine.logout()
-    }
-
     func subscribe(_ channel: String) async throws -> RtmCommonResponse {
         try await self.signalingEngine.subscribe(toChannel: channel)
     }

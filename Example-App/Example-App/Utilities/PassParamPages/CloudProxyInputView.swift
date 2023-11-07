@@ -99,6 +99,10 @@ struct CloudProxyInputView<Content: HasCloudProxyInput>: View {
         }.onAppear {
             channelId = DocsAppConfig.shared.channel
             userId = DocsAppConfig.shared.uid
+            proxyUrl = DocsAppConfig.shared.proxyUrl
+            proxyPort = DocsAppConfig.shared.proxyPort
+            proxyAccount = DocsAppConfig.shared.proxyAccount
+            proxyPassword = DocsAppConfig.shared.proxyPassword
         }
     }
 }

@@ -6,14 +6,19 @@
 //
 
 import SwiftUI
+import AgoraRtm
 
 extension SignalingManager {
     struct TokenResponse: Codable {
         var token: String
     }
 
+    var tokenUrl: String {
+        DocsAppConfig.shared.tokenUrl
+    }
+
     func fetchToken(from urlString: String, username: String, channelName: String? = nil) async throws -> String {
-        guard let url = URL(string: urlString) else {
+        guard let url = URL(string: "\(urlString)/getToken") else {
             throw URLError(.badURL)
         }
 
@@ -39,6 +44,24 @@ extension SignalingManager {
 
         return tokenResponse.token
     }
+
+    func loginMessageChannel(tokenUrl: String, username: String) async throws {
+        let token = try await self.fetchToken(
+            from: tokenUrl, username: username
+        )
+
+        try await self.signalingEngine.login(byToken: token)
+    }
+
+    func loginStreamChannel(tokenUrl: String, username: String, streamChannel: String) async throws {
+        let token = try await self.fetchToken(
+            from: tokenUrl, username: username, channelName: streamChannel
+        )
+
+        let channel = try self.signalingEngine.createStreamChannel(streamChannel)
+        let joinOption = RtmJoinChannelOption(token: token, features: [.presence])
+        try await channel?.join(with: joinOption)
+    }
 }
 
 extension GetStartedSignalingManager {
@@ -46,6 +69,13 @@ extension GetStartedSignalingManager {
         let token = try await fetchToken(from: tokenUrl, username: self.userId)
 
         await self.loginAndSub(to: channel, with: token)
+    }
+
+    public func rtmKit(_ rtmClient: RtmClientKit, tokenPrivilegeWillExpire channel: String?) {
+        Task {
+            let token = try await self.fetchToken(from: self.tokenUrl, username: self.userId)
+            try await signalingEngine.renewToken(token)
+        }
     }
 }
 
@@ -96,7 +126,7 @@ struct TokenAuthenticationView: View {
     }
 
     func publish(message: String) async {
-        await self.signalingManager.publish(
+        await self.signalingManager.publishAndRecord(
             message: message, to: self.channelId
         )
     }

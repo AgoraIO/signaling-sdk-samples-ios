@@ -16,7 +16,6 @@
 		F32AF8C52A8BB97B00A27ED1 /* MessageInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F32AF8C22A8BB97B00A27ED1 /* MessageInputView.swift */; };
 		F32AF8C62A8BB97B00A27ED1 /* MessagesListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F32AF8C32A8BB97B00A27ED1 /* MessagesListView.swift */; };
 		F32AF8C92A8BB99D00A27ED1 /* View+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F32AF8C82A8BB99D00A27ED1 /* View+Extensions.swift */; };
-		F32AF8CC2A8BB9C400A27ED1 /* AgoraRtmKit-Swift in Frameworks */ = {isa = PBXBuildFile; productRef = F32AF8CB2A8BB9C400A27ED1 /* AgoraRtmKit-Swift */; };
 		F32AF8D02A8BBA1000A27ED1 /* GettingStartedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F32AF8CF2A8BBA1000A27ED1 /* GettingStartedView.swift */; };
 		F32AF8D32A8BBAB800A27ED1 /* ChannelInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F32AF8D22A8BBAB800A27ED1 /* ChannelInputView.swift */; };
 		F32AF8D62A8BC19400A27ED1 /* TokenAuthenticationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F32AF8D52A8BC19400A27ED1 /* TokenAuthenticationView.swift */; };
@@ -26,6 +25,7 @@
 		F360D0CB2AEBE81F00B0586C /* CloudProxyInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F360D0CA2AEBE81F00B0586C /* CloudProxyInputView.swift */; };
 		F360D0CD2AEBF23800B0586C /* DataEncryptionInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F360D0CC2AEBF23800B0586C /* DataEncryptionInputView.swift */; };
 		F36313292AC4728B0000F29E /* RemoteUsersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F36313282AC4728B0000F29E /* RemoteUsersView.swift */; };
+		F381E9C02AFA7E5600E8D0D5 /* AgoraRtmKit-Swift in Frameworks */ = {isa = PBXBuildFile; productRef = F381E9BF2AFA7E5600E8D0D5 /* AgoraRtmKit-Swift */; };
 		F3BB3B182AE92660009E00C6 /* CloudProxyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB3B172AE92660009E00C6 /* CloudProxyView.swift */; };
 		F3BB3B1A2AE92669009E00C6 /* DataEncryptionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB3B192AE92669009E00C6 /* DataEncryptionView.swift */; };
 		F3BB3B1C2AE92676009E00C6 /* PresenceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB3B1B2AE92676009E00C6 /* PresenceView.swift */; };
@@ -71,7 +71,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F32AF8CC2A8BB9C400A27ED1 /* AgoraRtmKit-Swift in Frameworks */,
+				F381E9C02AFA7E5600E8D0D5 /* AgoraRtmKit-Swift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -264,7 +264,7 @@
 			);
 			name = "Example-App";
 			packageProductDependencies = (
-				F32AF8CB2A8BB9C400A27ED1 /* AgoraRtmKit-Swift */,
+				F381E9BF2AFA7E5600E8D0D5 /* AgoraRtmKit-Swift */,
 			);
 			productName = "Example-App";
 			productReference = F32AF8AB2A8BB86200A27ED1 /* Example-App.app */;
@@ -295,7 +295,7 @@
 			);
 			mainGroup = F32AF8A22A8BB86200A27ED1;
 			packageReferences = (
-				F32AF8CA2A8BB9C400A27ED1 /* XCRemoteSwiftPackageReference "AgoraRtm" */,
+				F381E9BE2AFA7E5600E8D0D5 /* XCRemoteSwiftPackageReference "AgoraRtm_Apple" */,
 			);
 			productRefGroup = F32AF8AC2A8BB86200A27ED1 /* Products */;
 			projectDirPath = "";
@@ -565,20 +565,20 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		F32AF8CA2A8BB9C400A27ED1 /* XCRemoteSwiftPackageReference "AgoraRtm" */ = {
+		F381E9BE2AFA7E5600E8D0D5 /* XCRemoteSwiftPackageReference "AgoraRtm_Apple" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/AgoraIO-Community/AgoraRtm.git";
+			repositoryURL = "https://github.com/AgoraIO/AgoraRtm_Apple.git";
 			requirement = {
 				kind = upToNextMinorVersion;
-				minimumVersion = "2.1.6-beta";
+				minimumVersion = "2.1.7-beta.1";
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		F32AF8CB2A8BB9C400A27ED1 /* AgoraRtmKit-Swift */ = {
+		F381E9BF2AFA7E5600E8D0D5 /* AgoraRtmKit-Swift */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = F32AF8CA2A8BB9C400A27ED1 /* XCRemoteSwiftPackageReference "AgoraRtm" */;
+			package = F381E9BE2AFA7E5600E8D0D5 /* XCRemoteSwiftPackageReference "AgoraRtm_Apple" */;
 			productName = "AgoraRtmKit-Swift";
 		};
 /* End XCSwiftPackageProductDependency section */

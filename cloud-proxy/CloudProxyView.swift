@@ -38,11 +38,11 @@ public class CloudProxyManager: GetStartedSignalingManager {
         guard reason == .settingProxyServer else { return }
 
         switch state {
-        case .disconnected: break
-        case .connecting: break
-        case .connected: break
-        case .reconnecting: break
-        case .failed: break
+        case .disconnected: print("proxy disconnected")
+        case .connecting: print("proxy connecting")
+        case .connected: print("proxy connected")
+        case .reconnecting: print("proxy reconnecting")
+        case .failed: print("proxy failed")
         default: break
         }
     }
@@ -85,7 +85,7 @@ struct CloudProxyView: View {
     // MARK: - Helpers and Setup
 
     func publish(message: String) async {
-        await self.signalingManager.publish(
+        await self.signalingManager.publishAndRecord(
             message: message, to: self.channelId
         )
     }

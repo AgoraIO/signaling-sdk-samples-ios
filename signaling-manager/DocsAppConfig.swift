@@ -59,6 +59,12 @@ public struct DocsAppConfig: Codable {
     var cipherKey: String
     /// Add Proxy Server URL
     var proxyUrl: String
+    /// Add Proxy Server Port
+    var proxyPort: String
+    /// Add Proxy Server Account
+    var proxyAccount: String
+    /// Add Proxy Server Password
+    var proxyPassword: String
     /// Add Proxy type from "none", "tcp", "udp"
     var proxyType: String
     /// Add Token Generator URL

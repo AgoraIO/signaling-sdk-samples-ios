@@ -3,7 +3,7 @@ import SwiftUI
 
 public class PresenceSignalingManager: SignalingManager, RtmClientDelegate {
 
-    @Published public var selectedUser: RtmMetadata?
+    @Published public var selectedUser: RtmPresenceGetStateResponse?
 
     override func subscribe(to channel: String) async throws -> RtmCommonResponse {
         try await self.signalingEngine.subscribe(
@@ -12,36 +12,48 @@ public class PresenceSignalingManager: SignalingManager, RtmClientDelegate {
         )
     }
 
-    func setLocalUserMetadata(key: String, value: String) async throws {
-        guard let storage = self.signalingEngine.storage,
-              let newMetadata = storage.createMetadata()
-        else { return }
-
-        newMetadata.setMetadataItem(
-            RtmMetadataItem(key: key, value: value)
-        )
-        try await storage.setUserMetadata(
-            userId: self.userId, data: newMetadata
+    @discardableResult
+    func setUserState(
+        in channel: String, to state: [String: String]
+    ) async throws -> RtmCommonResponse? {
+        try await self.signalingEngine.presence?.setUserState(
+            inChannel: .messageChannel(channel),
+            to: state
         )
     }
 
-    @Published var remoteUsers: [String: [String: String]] = [:]
+    func getState(of user: String, from channel: String) async throws -> RtmPresenceGetStateResponse? {
+        let presence = self.signalingEngine.presence
+        return try? await presence?.getState(
+            ofUser: user,
+            inChannel: .messageChannel(channel)
+        )
+    }
+
+    func getOnlineUsers(in channelName: String) async -> [String]? {
+        try? await signalingEngine.presence?.getOnlineUsers(
+            inChannel: .messageChannel(channelName),
+            options: RtmPresenceOptions(include: .userId)
+        ).users
+    }
+
+    @Published var remoteUsers: [String] = []
 
     public func rtmKit(_ rtmClient: RtmClientKit, didReceivePresenceEvent event: RtmPresenceEvent) {
         DispatchQueue.main.async {
             switch event.type {
             case .snapshot(let states):
-                self.remoteUsers = states
+                // states snapshot received
+                break
             case .remoteJoinChannel(let user):
                 // remote user joined channel
-                if self.remoteUsers[user] == nil {
-                    self.remoteUsers[user] = [:]
-                }
+                break
             case .remoteLeaveChannel(let user):
                 // remote user left channel
-                self.remoteUsers.removeValue(forKey: user)
+                break
             case .remoteStateChanged(let user, let states):
-                self.remoteUsers.updateValue(states, forKey: user)
+                // remote user updated states
+                break
             default: break
             }
         }
@@ -56,15 +68,16 @@ struct PresenceView: View {
     @ObservedObject var signalingManager: PresenceSignalingManager
     let channelId: String
     @State private var isSheetPresented: Bool = false
+    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
     var body: some View {
         ZStack {
             if self.signalingManager.remoteUsers.isEmpty {
                 Text("None").padding()
             } else {
-                List(signalingManager.remoteUsers.keys.sorted(), id: \.self) { key in
+                List(signalingManager.remoteUsers.sorted(), id: \.self) { key in
                     Button(action: {
-                        Task {try await self.didSelectUser(key)}
+                        Task { try await self.didSelectUser(key) }
                     }, label: {
                         Text(key)
                     })
@@ -74,23 +87,29 @@ struct PresenceView: View {
                     }
                 }
             }
-        }.onAppear {
+        }.onReceive(timer, perform: { out in
+            Task {
+                // fetch online users every 5 seconds.
+                // fetching directly is an alternative to checking delegate callbacks
+                guard let users = await self.signalingManager.getOnlineUsers(in: self.channelId)
+                else { return }
+                self.signalingManager.remoteUsers = users
+            }
+        }).onAppear {
             await signalingManager.loginAndSub(to: self.channelId, with: DocsAppConfig.shared.token)
-            try? await self.signalingManager.setLocalUserMetadata(
-                key: "metaId", value: UUID().uuidString
-            )
+            _ = try? await self.signalingManager.setUserState(in: self.channelId, to: ["joinedAt": Date.now.description])
         }.onDisappear {
+            timer.upstream.connect().cancel()
             try? await signalingManager.destroy()
         }
     }
 
     func didSelectUser(_ user: String) async throws {
-        guard let storage = self.signalingManager.signalingEngine.storage,
-              let data = try await storage.getMetadata(forUser: user).data
+        guard let states = try? await self.signalingManager.getState(of: user, from: self.channelId)
         else { return }
 
         DispatchQueue.main.async {
-            self.signalingManager.selectedUser = data
+            self.signalingManager.selectedUser = states
             self.isSheetPresented = true
         }
     }
@@ -104,17 +123,18 @@ struct PresenceView: View {
     static var docTitle: String = "Presence"
 }
 
-struct DictionaryView: View {
-    @State var data: RtmMetadata
+fileprivate struct DictionaryView: View {
+    @State var data: RtmPresenceGetStateResponse
 
     var body: some View {
         Group {
-            if data.metadataItems.isEmpty {
+            if data.states.isEmpty {
                 Text("No data")
             } else {
-                List(data.metadataItems, id: \.key) { item in
-                    Text("\(item.key): \(item.value)")
+                List(Array(data.states.keys), id: \.self) { item in
+                    Text("\(item): \(data.states[item] ?? "invalid")")
                 }
+                Text("some data")
             }
         }.navigationTitle("User Details")
     }
