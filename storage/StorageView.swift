@@ -285,7 +285,7 @@ struct StorageView: View {
     static var docTitle: String = "Store channel and user data"
 }
 
-fileprivate struct DictionaryView: View {
+private struct DictionaryView: View {
     @State var data: RtmMetadata
 
     var body: some View {
@@ -300,7 +300,6 @@ fileprivate struct DictionaryView: View {
         }.navigationTitle("User Details")
     }
 }
-
 
 // MARK: - Previews
 

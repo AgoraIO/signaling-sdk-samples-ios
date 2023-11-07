@@ -35,7 +35,7 @@ public class StreamChannelSignalingManager: SignalingManager, RtmClientDelegate 
             throw error
         }
     }
-    
+
     func leaveChannel() async throws {
         try await self.streamChannel?.leave()
     }

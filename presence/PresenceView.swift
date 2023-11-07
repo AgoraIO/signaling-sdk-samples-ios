@@ -87,7 +87,7 @@ struct PresenceView: View {
                     }
                 }
             }
-        }.onReceive(timer, perform: { out in
+        }.onReceive(timer, perform: { _ in
             Task {
                 // fetch online users every 5 seconds.
                 // fetching directly is an alternative to checking delegate callbacks
@@ -97,7 +97,10 @@ struct PresenceView: View {
             }
         }).onAppear {
             await signalingManager.loginAndSub(to: self.channelId, with: DocsAppConfig.shared.token)
-            _ = try? await self.signalingManager.setUserState(in: self.channelId, to: ["joinedAt": Date.now.description])
+            _ = try? await self.signalingManager.setUserState(
+                in: self.channelId,
+                to: ["joinedAt": Date.now.description]
+            )
         }.onDisappear {
             timer.upstream.connect().cancel()
             try? await signalingManager.destroy()
@@ -123,7 +126,7 @@ struct PresenceView: View {
     static var docTitle: String = "Presence"
 }
 
-fileprivate struct DictionaryView: View {
+private struct DictionaryView: View {
     @State var data: RtmPresenceGetStateResponse
 
     var body: some View {
