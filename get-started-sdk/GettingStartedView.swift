@@ -42,16 +42,9 @@ public class GetStartedSignalingManager: SignalingManager, RtmClientDelegate {
     /// - Parameters:
     ///   - message: String to be sent to the channel. UTF-8 suppported 👋.
     ///   - channel: Channel name to publish the message to.
-    public func publish(message: String, to channel: String) async {
-        do {
-            try await self.signalingEngine.publish(
-                message: message,
-                to: channel
-            )
-        } catch let err as RtmErrorInfo {
-            return await self.updateLabel(to: "Could not publish message: \(err.reason)")
-        } catch {
-            await self.updateLabel(to: "Unknown error: \(error.localizedDescription)")
+    public func publishAndRecord(message: String, to channel: String) async {
+        guard (try? await super.publish(message: message, to: channel)) != nil else {
+            return
         }
 
         DispatchQueue.main.async {
@@ -134,7 +127,7 @@ struct GettingStartedView: View {
     // MARK: - Helpers and Setup
 
     func publish(message: String) async {
-        await self.signalingManager.publish(
+        await self.signalingManager.publishAndRecord(
             message: message, to: self.channelId
         )
     }

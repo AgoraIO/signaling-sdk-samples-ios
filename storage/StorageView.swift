@@ -37,8 +37,8 @@ public class StorageSignalingManager: SignalingManager, RtmClientDelegate {
             )
         }
 
-        _ = try await storage.setUserMetadata(
-            userId: self.userId, data: userMetadata,
+        _ = try await storage.setMetadata(
+            forUser: self.userId, data: userMetadata,
             options: RtmMetadataOptions(recordTs: true, recordUserId: true)
         )
     }
@@ -47,12 +47,12 @@ public class StorageSignalingManager: SignalingManager, RtmClientDelegate {
         guard let localMetadata else { return }
 
         for metadataItem in localMetadata.metadataItems
-            where updates.keys.contains(metadataItem.key) {
+        where updates.keys.contains(metadataItem.key) {
             metadataItem.value = updates[metadataItem.key]!
         }
 
-        _ = try await signalingEngine.storage?.setUserMetadata(
-            userId: self.userId, data: localMetadata,
+        _ = try await signalingEngine.storage?.setMetadata(
+            forUser: self.userId, data: localMetadata,
             options: RtmMetadataOptions(recordTs: true, recordUserId: true)
         )
     }
@@ -61,8 +61,29 @@ public class StorageSignalingManager: SignalingManager, RtmClientDelegate {
         try await signalingEngine.storage!.getMetadata(forUser: user)
     }
 
-    func subscribeToMetadata(for user: String) async throws {
-        try await signalingEngine.storage?.subscribeToMetadata(forUser: user)
+    func subscribeToMetadata(for user: String) async {
+        do {
+            try await signalingEngine.storage?.subscribeToMetadata(forUser: user)
+        } catch {
+            // could not subscribe to metadata
+        }
+    }
+
+    func updateMetadata(for user: String, data: [String: String]) async {
+        guard let storage = signalingEngine.storage,
+              let metadata = storage.createMetadata()
+        else { return }
+
+        for item in data {
+            metadata.setMetadataItem(
+                RtmMetadataItem(key: item.key, value: item.value)
+            )
+        }
+        do {
+            try await signalingEngine.storage?.updateMetadata(forUser: user, data: metadata)
+        } catch {
+            // could not update metadata
+        }
     }
 
     func setMetadata(
@@ -94,8 +115,21 @@ public class StorageSignalingManager: SignalingManager, RtmClientDelegate {
             try await signalingEngine.lock?.releaseLock(
                 named: lock, fromChannel: .messageChannel(channel)
             )
-            await self.updateLabel(to: "success")
         }
+        await self.updateLabel(to: "success")
+    }
+
+    func setMetadata(forUser user: String, items: [String: String]) {
+        guard let storage = signalingEngine.storage,
+              let metadata = storage.createMetadata()
+        else { return }
+
+        for item in items {
+            metadata.setMetadataItem(
+                RtmMetadataItem(key: item.key, value: item.value)
+            )
+        }
+        storage.setMetadata(forUser: user, data: metadata)
     }
 
     func getMetadata(forChannel channel: String) async throws -> RtmGetMetadataResponse {
@@ -112,8 +146,8 @@ public class StorageSignalingManager: SignalingManager, RtmClientDelegate {
             removeMetadata.setMetadataItem(.init(key: key, value: ""))
         }
 
-        _ = try await signalingEngine.storage?.removeUserMetadata(
-            userId: self.userId, data: removeMetadata
+        _ = try await signalingEngine.storage?.removeMetadata(
+            forUser: self.userId, data: removeMetadata
         )
     }
     public func rtmKit(_ rtmClient: RtmClientKit, didReceiveStorageEvent event: RtmStorageEvent) {
@@ -127,7 +161,42 @@ public class StorageSignalingManager: SignalingManager, RtmClientDelegate {
         default: break
         }
     }
+}
+extension StorageSignalingManager {
+    func setLock(lockName: String, channel: String, ttl: Int32) async throws {
+        try await signalingEngine.lock?.setLock(
+            named: lockName,
+            forChannel: .messageChannel(channel),
+            ttl: ttl
+        )
+    }
 
+    func acquireLock(lockName: String, channel: String, retry: Bool) async -> RtmCommonResponse? {
+        try? await signalingEngine.lock?.acquireLock(
+            named: lockName,
+            fromChannel: .messageChannel(channel),
+            retry: retry
+        )
+    }
+
+    func releaseLock(lockName: String, channel: String, retry: Bool) {
+        signalingEngine.lock?.releaseLock(
+            named: lockName, fromChannel: .messageChannel(channel)
+        )
+    }
+
+    func removeLock(lockName: String, channel: String) {
+        signalingEngine.lock?.removeLock(
+            named: lockName, fromChannel: .messageChannel(channel)
+        )
+    }
+
+    func getLocks(inChannel channel: String) async throws -> RtmGetLocksResponse? {
+        try await signalingEngine.lock?.getLocks(forChannel: .messageChannel(channel))
+    }
+}
+
+extension StorageSignalingManager {
     // MARK: Handle Errors
     /// Handle different error cases, and fetch a new token if appropriate.
     /// - Parameters:
@@ -214,6 +283,22 @@ struct StorageView: View {
 
     static var docPath: String = "storage"
     static var docTitle: String = "Store channel and user data"
+}
+
+private struct DictionaryView: View {
+    @State var data: RtmMetadata
+
+    var body: some View {
+        Group {
+            if data.metadataItems.isEmpty {
+                Text("No data")
+            } else {
+                List(data.metadataItems, id: \.key) { item in
+                    Text("\(item.key): \(item.value)")
+                }
+            }
+        }.navigationTitle("User Details")
+    }
 }
 
 // MARK: - Previews

@@ -43,6 +43,7 @@ open class SignalingManager: NSObject, ObservableObject {
 
     @MainActor
     func updateLabel(to message: String) {
+        print("[RTM App Update]: \(message)")
         self.label = message
     }
 
@@ -71,6 +72,63 @@ open class SignalingManager: NSObject, ObservableObject {
         }
     }
 
+    @discardableResult
+    func loginBasic(byToken token: String?) async -> RtmCommonResponse? {
+        do {
+            // First try logging in with the current temporary token
+            return try await self.signalingEngine.login(byToken: token)
+        } catch {
+            if let err = error as? RtmErrorInfo {
+                print("Login failed: \(err.reason)")
+            } else {
+                print("Login failed: \(error.localizedDescription)")
+            }
+            return nil
+        }
+    }
+
+    @discardableResult
+    func logout() async throws -> RtmCommonResponse {
+        try await self.signalingEngine.logout()
+    }
+
+    /// Publish a message to a message channel.
+    /// - Parameters:
+    ///   - message: String to be sent to the channel. UTF-8 suppported 👋.
+    ///   - channel: Channel name to publish the message to.
+    @discardableResult
+    open func publish(message: String, to channel: String) async throws -> RtmCommonResponse {
+        do {
+            return try await self.signalingEngine.publish(
+                message: message,
+                to: channel
+            )
+        } catch let err as RtmErrorInfo {
+            await self.updateLabel(to: "Could not publish message: \(err.reason)")
+            throw err
+        } catch {
+            await self.updateLabel(to: "Unknown error: \(error.localizedDescription)")
+            throw error
+        }
+    }
+
+    open func publishBasic(
+        message: String, to channel: String
+    ) async throws -> RtmCommonResponse {
+        do {
+            return try await self.signalingEngine.publish(
+                message: message,
+                to: channel
+            )
+        } catch let err as RtmErrorInfo {
+            print("Could not publish message: \(err.reason)")
+            throw err
+        } catch {
+            print("Unknown error: \(error.localizedDescription)")
+            throw error
+        }
+    }
+
     /// Log into Signaling with a token, and subscribe to a message channel.
     /// - Parameters:
     ///   - channel: Channel name to subscribe to.
@@ -95,6 +153,11 @@ open class SignalingManager: NSObject, ObservableObject {
         )
     }
 
+    @discardableResult
+    func unsubscribe(from channel: String) async throws -> RtmCommonResponse {
+        try await self.signalingEngine.unsubscribe(fromChannel: channel)
+    }
+
     func destroy() async throws {
         try await self.signalingEngine.logout()
         try self.signalingEngine.destroy()
@@ -111,13 +174,14 @@ open class SignalingManager: NSObject, ObservableObject {
     ) async {
         switch error.errorCode {
         case .loginNoServerResources, .loginTimeout, .loginRejected, .loginAborted:
-            await self.updateLabel(to: "could not log in, check your app ID and token")
+            await self.updateLabel(to: "could not log in, check your app ID and token. error: \(error.reason)")
         case .channelSubscribeFailed, .channelSubscribeTimeout, .channelNotSubscribed:
             await self.updateLabel(to: "could not subscribe to channel")
         case .invalidToken:
             if let tryloginAgain, label == nil, let token = try? await self.fetchToken(
                 from: DocsAppConfig.shared.tokenUrl,
-                username: DocsAppConfig.shared.uid
+                username: DocsAppConfig.shared.uid,
+                channelName: channel
             ) {
                 await self.updateLabel(to: "fetching token")
                 await tryloginAgain(channel, token)
@@ -126,5 +190,36 @@ open class SignalingManager: NSObject, ObservableObject {
             await self.updateLabel(to: "failed: \(error.operation)\nreason: \(error.reason)")
         }
     }
-
 }
+
+/*
+extension SignalingManager: RtmClientDelegate {
+    public func rtmKit(_ rtmClient: RtmClientKit, didReceiveMessageEvent event: RtmMessageEvent) {
+        // received message
+    }
+    public func rtmKit(_ rtmClient: RtmClientKit, didReceiveTopicEvent event: RtmTopicEvent) {
+        // received topic event
+    }
+    public func rtmKit(_ rtmClient: RtmClientKit, didReceivePresenceEvent event: RtmPresenceEvent) {
+        // received presence event
+    }
+    public func rtmKit(_ rtmClient: RtmClientKit, didReceiveStorageEvent event: RtmStorageEvent) {
+        // received storage event
+    }
+    public func rtmKit(_ rtmClient: RtmClientKit, didReceiveLockEvent event: RtmLockEvent) {
+        // received lock event
+    }
+    public func rtmKit(_ rtmClient: RtmClientKit, tokenPrivilegeWillExpire channel: String?) {
+        // current token will expire soon
+    }
+    public func rtmKit(
+        _ rtmClient: RtmClientKit,
+        channel: String,
+        connectionChangedToState
+        state: RtmClientConnectionState,
+        reason: RtmClientConnectionChangeReason
+    ) {
+        // connection state changed
+    }
+}
+*/

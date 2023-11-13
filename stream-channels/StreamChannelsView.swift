@@ -17,6 +17,59 @@ public class StreamChannelSignalingManager: SignalingManager, RtmClientDelegate 
 
     internal var streamChannel: RtmStreamChannel?
 
+    func joinChannel(_ channel: String, with token: String?) async throws -> RtmStreamChannel {
+        do {
+            // Create stream channel
+            guard let streamChannel = try signalingEngine
+                .createStreamChannel(channel) else {
+                fatalError("could not create channel")
+            }
+
+            // Join Stream Channel
+            try await streamChannel.join(with: RtmJoinChannelOption(
+                token: token, features: [.presence]
+            ))
+            return streamChannel
+        } catch {
+            // could not join channel
+            throw error
+        }
+    }
+
+    func leaveChannel() async throws {
+        try await self.streamChannel?.leave()
+    }
+
+    func joinTopic(named topic: String) async throws {
+        try await self.streamChannel?.joinTopic(
+            topic, with: RtmJoinTopicOption(qos: .ordered)
+        )
+    }
+
+    func subTopic(named topic: String) async throws {
+        try await self.streamChannel?.subscribe(toTopic: topic)
+    }
+
+    func unsubTopic(named topic: String) async throws {
+        try await self.streamChannel?.unsubscribe(fromTopic: topic)
+    }
+
+    func leaveTopic(named topic: String) async throws {
+        try await self.streamChannel?.leaveTopic(topic)
+        DispatchQueue.main.async {
+            self.topics = self.topics.filter { $0 != topic }
+        }
+    }
+
+    @discardableResult
+    func publish(
+        message: String, in channel: RtmStreamChannel, topic: String
+    ) async throws -> RtmCommonResponse {
+        try await channel.publishTopicMessage(
+            message: message, inTopic: topic, with: nil
+        )
+    }
+
     /// Log into Signaling with a token, and subscribe to a message channel.
     /// - Parameters:
     ///   - channel: Channel name to subscribe to.
@@ -35,17 +88,7 @@ public class StreamChannelSignalingManager: SignalingManager, RtmClientDelegate 
                 )
             }
 
-            // Create stream channel
-            guard let streamChannel = try signalingEngine
-                .createStreamChannel(channelName) else {
-                return await self.updateLabel(to: "creating stream channel failed")
-            }
-
-            // Join Stream Channel
-            _ = try await streamChannel.join(with: RtmJoinChannelOption(
-                token: streamChannelToken, features: [.presence]
-            ))
-            self.streamChannel = streamChannel
+            self.streamChannel = try await self.joinChannel(channelName, with: streamChannelToken)
 
             await self.updateLabel(to: "success")
         } catch let err as RtmErrorInfo {
@@ -55,38 +98,13 @@ public class StreamChannelSignalingManager: SignalingManager, RtmClientDelegate 
         }
     }
 
-    func joinTopic(named topic: String) async throws {
-        try await self.streamChannel?.joinTopic(
-            topic, with: RtmJoinTopicOption(qos: .ordered)
-        )
-        print("self.streamChannel")
-        print(self.streamChannel)
-    }
-
-    func subTopic(named topic: String) async throws {
-        try await self.streamChannel?.subscribe(toTopic: topic)
-    }
-
-    func unsubTopic(named topic: String) async throws {
-        try await self.streamChannel?.unsubscribe(fromTopic: topic)
-    }
-
-    func leaveTopic(named topic: String) async throws {
-        try await self.streamChannel?.leaveTopic(topic)
-        DispatchQueue.main.async {
-            self.topics = self.topics.filter { $0 != topic }
-        }
-    }
-
     /// Publish a message to a message channel.
     /// - Parameters:
     ///   - message: String to be sent to the channel. UTF-8 suppported 👋.
     ///   - channel: Channel name to publish the message to.
     public func publish(message: String, in channel: RtmStreamChannel, to topic: String) async {
         do {
-            _ = try await self.streamChannel?.publishTopicMessage(
-                message: message, inTopic: topic, with: nil
-            )
+            try await self.publish(message: message, in: channel, topic: topic)
         } catch let err as RtmErrorInfo {
             return await self.updateLabel(to: "Could not publish message: \(err.reason)")
         } catch {
@@ -199,6 +217,7 @@ struct StreamChannelsView: View {
             await signalingManager.loginAndJoin(streamChannel: self.channelId, with: DocsAppConfig.shared.token
             )
         }.onDisappear {
+            try? await self.signalingManager.leaveChannel()
             try? await signalingManager.destroy()
         }.sheet(isPresented: $showingAddTopicView) {
             // 3. Present the add topic view

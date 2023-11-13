@@ -9,7 +9,8 @@ public class EncryptionSignalingManager: GetStartedSignalingManager {
         let config = RtmClientConfig(appId: self.appId, userId: self.userId)
 
         config.encryptionConfig = .aes128GCM(
-            key: encryptionKey, salt: encryptionSalt
+            key: encryptionKey,
+            salt: RtmClientConfig.encryptSaltString(salt: encryptionSalt)
         )
 
         guard let eng = try? RtmClientKit(
@@ -57,7 +58,7 @@ struct DataEncryptionView: View {
     // MARK: - Helpers and Setup
 
     func publish(message: String) async {
-        await self.signalingManager.publish(
+        await self.signalingManager.publishAndRecord(
             message: message, to: self.channelId
         )
     }
