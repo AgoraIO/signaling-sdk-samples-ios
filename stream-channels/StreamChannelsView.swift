@@ -20,10 +20,8 @@ public class StreamChannelSignalingManager: SignalingManager, RtmClientDelegate 
     func joinChannel(_ channel: String, with token: String?) async throws -> RtmStreamChannel {
         do {
             // Create stream channel
-            guard let streamChannel = try signalingEngine
-                .createStreamChannel(channel) else {
-                fatalError("could not create channel")
-            }
+            let streamChannel = try signalingEngine
+                .createStreamChannel(channel)
 
             // Join Stream Channel
             try await streamChannel.join(with: RtmJoinChannelOption(

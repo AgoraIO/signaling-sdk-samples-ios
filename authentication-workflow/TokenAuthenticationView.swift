@@ -60,7 +60,7 @@ extension SignalingManager {
 
         let channel = try self.signalingEngine.createStreamChannel(streamChannel)
         let joinOption = RtmJoinChannelOption(token: token, features: [.presence])
-        try await channel?.join(with: joinOption)
+        try await channel.join(with: joinOption)
     }
 }
 

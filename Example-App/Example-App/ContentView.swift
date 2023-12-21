@@ -11,7 +11,7 @@ import AgoraRtm
 struct ContentView: View {
     var body: some View {
         NavigationStack {
-            #if os(iOS)
+            #if os(iOS) || os(visionOS)
             content.navigationBarTitleDisplayMode(.inline)
             #elseif os(macOS)
             content.toolbarTitleDisplayMode(.inline)
