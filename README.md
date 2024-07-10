@@ -1,10 +1,12 @@
 # Signaling SDK for iOS/macOS reference app
 
-This app demonstrates the using [Agora's Signaling SDK](https://docs-beta.agora.io/en/signaling/get-started/get-started-sdk?platform=ios) for real-time communication in a SwiftUI app.
+This app demonstrates using the [Agora's Signaling SDK](https://docs-beta.agora.io/en/signaling/get-started/get-started-sdk?platform=ios) for real-time communication in a SwiftUI app.
 
-This example app is a robust and comprehensive documentation reference app for iOS and macOS, designed to enhance your productivity and understanding. It's built to be flexible, easily extensible, and beginner-friendly.
+The example app is a documentation reference for iOS and macOS, designed to enhance your productivity and understanding. It's built to be flexible, easily extensible, and beginner-friendly.
 
-To understand the contents better, you can go to [Agora's Documentation](https://docs.agora.io), which explains each example in more detail.
+> **Note:** :information_source: Please note that the code examples provided in this repository are for demonstration purposes only and are not officially supported by Agora. They may not reflect the latest best practices or updates in Agora's SDK. For the latest updates, please refer to [Agora's Official Documentation](https://docs.agora.io/en/signaling/overview/product-overview).
+
+Use these examples as a reference and modify them to suit your specific needs.
 
 - [Samples](#samples)
 - [Prerequisites](#prerequisites)
